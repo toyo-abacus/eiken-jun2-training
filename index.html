@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#173b73">
+<title>英検準2級 実戦トレーニング</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f3f6fa;color:#172033;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Hiragino Kaku Gothic ProN",sans-serif}
+header{background:#173b73;color:#fff;padding:18px 15px;position:sticky;top:0;z-index:20}
+.header{max-width:900px;margin:auto}
+h1{font-size:23px;margin:0}.sub{font-size:12px;opacity:.85;margin-top:4px}
+main{max-width:900px;margin:auto;padding:16px 13px 50px}
+.card{background:#fff;border-radius:18px;padding:18px;box-shadow:0 5px 20px rgba(23,59,115,.08);margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.menu{border:0;text-align:left;min-height:120px;cursor:pointer}
+.menu .ico{font-size:30px}.menu b{display:block;font-size:18px;margin:7px 0}.menu span{font-size:13px;color:#687386;line-height:1.5}
+.section{display:none}.section.active{display:block}
+.btn{border:0;background:#173b73;color:#fff;border-radius:11px;padding:12px 17px;font-weight:700;cursor:pointer}
+.back{border:0;background:#e7edf6;border-radius:10px;padding:9px 13px;font-weight:700;margin-bottom:12px;cursor:pointer}
+.badge{display:inline-block;background:#eaf1ff;color:#245ca9;padding:5px 9px;border-radius:99px;font-size:12px;font-weight:700}
+.muted{font-size:13px;color:#687386;line-height:1.65}
+.meta{display:flex;justify-content:space-between;font-size:13px;color:#687386}
+.progress{height:9px;background:#e5e9ef;border-radius:99px;overflow:hidden;margin:10px 0 16px}
+.bar{height:100%;background:#2d70d6;width:0;transition:.2s}
+.question{font-size:19px;font-weight:700;line-height:1.65;margin:13px 0 18px}
+.options{display:grid;gap:9px}.option{border:2px solid #dce2eb;background:#fff;border-radius:12px;padding:13px;text-align:left;font:inherit;cursor:pointer}
+.option.correct{border-color:#198754;background:#eaf8f0}.option.wrong{border-color:#dc3545;background:#fff0f1}
+.option:disabled{cursor:default}
+.ex{display:none;background:#f5f7fa;border-radius:12px;padding:13px;margin-top:13px;line-height:1.65}.ex.show{display:block}
+.next{display:none;width:100%;margin-top:13px}
+.result{display:none;text-align:center}.score{font-size:31px;font-weight:800;margin:8px}
+textarea{width:100%;min-height:150px;border:2px solid #dce2eb;border-radius:12px;padding:12px;font:inherit}
+.pillrow{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}.pill{background:#eef2f7;border-radius:99px;padding:6px 10px;font-size:12px}
+.analysis{border-left:4px solid #2d70d6;padding-left:12px;margin:12px 0;line-height:1.7}
+.timer{font-size:28px;font-weight:800;text-align:center;margin:5px}.reviewItem{border:1px solid #dfe5ee;border-radius:13px;padding:13px;margin:10px 0;background:#fbfcfe}.reviewItem h3{font-size:15px;line-height:1.5;margin:0 0 8px}.answerBox{background:#eaf8f0;border-radius:9px;padding:9px;margin-top:8px;font-size:13px}.wrongTag{display:inline-block;background:#fff0f1;color:#b42332;border-radius:99px;padding:4px 8px;font-size:11px;font-weight:700;margin-bottom:6px}
+hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.menu{min-height:96px}h1{font-size:21px}.question{font-size:18px}}
+</style>
+</head>
+<body>
+<header><div class="header"><h1>英検準2級 実戦トレーニング</h1><div class="sub">過去問3回分の出題形式・傾向を参考にしたオリジナル練習</div></div></header>
+<main>
+
+<section id="home" class="section active">
+<div class="card">
+<span class="badge">過去問分析反映版</span>
+<h2>英検準2級を本番形式で練習</h2>
+<p class="muted">2025年度第2回・第3回、2026年度第1回の一次試験を確認し、問題構成・設問タイプ・ライティング形式・リスニング構成を反映しています。問題文そのものは転載せず、オリジナル問題で練習します。</p>
+</div>
+<div class="grid">
+<button class="card menu" onclick="startReading()"><div class="ico">📝</div><b>リーディング実戦</b><span>語彙・会話・文法・長文など約80問からランダム出題</span></button>
+<button class="card menu" onclick="openSec('writing')"><div class="ico">✏️</div><b>ライティング</b><span>Eメール＋意見英作文を本番型で練習</span></button>
+<button class="card menu" onclick="openSec('listening')"><div class="ico">🎧</div><b>リスニング</b><span>第1部・第2部・第3部の形式で練習</span></button>
+<button class="card menu" onclick="startListeningQuiz()"><div class="ico">🔊</div><b>リスニング30問</b><span>過去問の3部構成を参考にした追加問題</span></button>
+<button class="card menu" onclick="openSec('analysis')"><div class="ico">📊</div><b>過去問分析</b><span>3回分から確認できた出題構成</span></button>
+<button class="card menu" onclick="openSec('record')"><div class="ico">📈</div><b>学習記録</b><span>この端末に保存した成績</span></button>
+<button class="card menu" onclick="openSec('review')"><div class="ico">🔁</div><b>間違えた問題・復習</b><span>間違えた問題を後から確認・再挑戦</span></button>
+<button class="card menu" onclick="openSec('guide')"><div class="ico">ℹ️</div><b>使い方</b><span>サイトの学習方法と注意点</span></button>
+</div>
+</section>
+
+<section id="reading" class="section">
+<button class="back" onclick="openSec('home')">← メニュー</button>
+<div class="card">
+<div class="meta"><span id="rTitle"></span><span id="rScore"></span></div>
+<div class="progress"><div id="rBar" class="bar"></div></div>
+<div id="rQuestion" class="question"></div>
+<div id="rOptions" class="options"></div>
+<div id="rEx" class="ex"></div>
+<button id="rNext" class="btn next" onclick="nextReading()">次の問題</button>
+<div id="rResult" class="result">
+<hr><div id="rFinal" class="score"></div><p id="rMessage" class="muted"></p>
+<button class="btn" onclick="startReading()">もう一度挑戦</button>
+</div>
+</div>
+</section>
+
+<section id="writing" class="section">
+<button class="back" onclick="openSec('home')">← メニュー</button>
+<div class="card">
+<span class="badge">問題5・Eメール</span>
+<h2>返信メール練習</h2>
+<p class="muted">過去問3回分と同じ形式を意識したオリジナル問題です。40～50語程度を目安に書き、相手のメール中の話題について具体的な質問を2つ入れる練習をします。</p>
+<p><b>Hi!</b><br>I visited a new community center in my town last weekend. It has a large study room, a small café, and a space where local people can hold events. I think it will be useful for many people. Do you think more towns should build places like this?</p>
+<p><b>Your friend,<br>Alex</b></p>
+<textarea id="emailText" placeholder="Hi, Alex!&#10;&#10;Thank you for your e-mail.&#10;..."></textarea>
+<div id="emailWords" class="muted">0 words</div>
+<button class="btn" onclick="countWords('emailText','emailWords')">語数を数える</button>
+<hr>
+<span class="badge">問題6・意見英作文</span>
+<h2>Opinion Essay</h2>
+<p class="muted">50～60語程度を目安に、意見＋理由2つを書きます。</p>
+<p><b>Do you think students should have more opportunities to learn practical skills at school?</b></p>
+<textarea id="essayText" placeholder="I think ..."></textarea>
+<div id="essayWords" class="muted">0 words</div>
+<button class="btn" onclick="countWords('essayText','essayWords')">語数を数える</button>
+</div>
+</section>
+
+<section id="listening" class="section">
+<button class="back" onclick="openSec('home')">← メニュー</button>
+<div class="card">
+<span class="badge">リスニング 第1部</span>
+<h2>応答問題</h2>
+<p class="muted">本番では対話の最後の発言に対する適切な応答を選ぶ形式です。</p>
+<p><b>“I heard you moved to a new apartment. How do you like it?”</b></p>
+<div class="options">
+<button class="option" onclick="listenCheck(this,true)">I really like it. It is close to my school.</button>
+<button class="option" onclick="listenCheck(this,false)">At seven o'clock yesterday.</button>
+<button class="option" onclick="listenCheck(this,false)">I bought two apples.</button>
+</div><div id="lex1" class="ex">自然な応答は「とても気に入っています。学校に近いです。」です。</div>
+<button class="btn" onclick="speak('I heard you moved to a new apartment. How do you like it?')">▶ 英文を聞く</button>
+</div>
+<div class="card">
+<span class="badge">リスニング 第2部</span>
+<h2>会話内容理解</h2>
+<p><b>A:</b> Are you going to the school festival tomorrow?<br><b>B:</b> Yes. I have to help at the food stand in the morning. After that, I want to watch the music show.</p>
+<p><b>What will B do in the morning?</b></p>
+<div class="options">
+<button class="option" onclick="listenCheck(this,true)">Help at the food stand.</button>
+<button class="option" onclick="listenCheck(this,false)">Watch the music show.</button>
+<button class="option" onclick="listenCheck(this,false)">Go shopping.</button>
+<button class="option" onclick="listenCheck(this,false)">Practice basketball.</button>
+</div><div id="lex2" class="ex">Bは午前中に food stand を手伝うと言っています。</div>
+<button class="btn" onclick="speak('Are you going to the school festival tomorrow? Yes. I have to help at the food stand in the morning. After that, I want to watch the music show.')">▶ 英文を聞く</button>
+</div>
+<div class="card">
+<span class="badge">リスニング 第3部</span>
+<h2>英文内容理解</h2>
+<p class="muted">短い説明文を聞き、内容について答える形式です。</p>
+<p><b>本文：</b>A small library in a town started a bicycle delivery service. Volunteers take books to older people who cannot easily visit the library. The service is used by many residents.</p>
+<p><b>Why did the library start the service?</b></p>
+<div class="options">
+<button class="option" onclick="listenCheck(this,false)">To sell more bicycles.</button>
+<button class="option" onclick="listenCheck(this,true)">To help people who cannot easily visit the library.</button>
+<button class="option" onclick="listenCheck(this,false)">To close the library earlier.</button>
+<button class="option" onclick="listenCheck(this,false)">To teach volunteers to ride bicycles.</button>
+</div><div id="lex3" class="ex">図書館へ行くことが難しい高齢者などを助けるためです。</div>
+<button class="btn" onclick="speak('A small library in a town started a bicycle delivery service. Volunteers take books to older people who cannot easily visit the library. The service is used by many residents. Why did the library start the service?')">▶ 英文を聞く</button>
+</div>
+</section>
+
+<section id="lquiz" class="section"><button class="back" onclick="openSec('home')">← メニュー</button><div class="card"><div class="meta"><span id="lTitle"></span><span id="lScore"></span></div><div class="progress"><div id="lBar" class="bar"></div></div><div id="lQ" class="question"></div><button id="lPlay" class="btn">▶ 英文を聞く</button><div id="lOpts" class="options" style="margin-top:12px"></div><div id="lEx" class="ex"></div><button id="lNext" class="btn next" onclick="nextLQ()">次の問題</button><div id="lResult" class="result"><hr><div id="lFinal" class="score"></div><p id="lMsg" class="muted"></p><button class="btn" onclick="startListeningQuiz()">もう一度挑戦</button></div></div></section>
+
+<section id="analysis" class="section">
+<button class="back" onclick="openSec('home')">← メニュー</button>
+<div class="card">
+<h2>3回分から確認できた構成</h2>
+<div class="analysis"><b>リーディング</b><br>語句空所補充、会話文の空所補充、短い英文の空所補充、長文読解という構成で、3回分を通して同じ大枠が確認できます。</div>
+<div class="analysis"><b>ライティング</b><br>問題5はEメール形式で40～50語程度。相手のメール中の下線部について、具体的な質問を2つする形式です。問題6は質問に対する自分の意見と理由2つを50～60語程度で書く形式です。</div>
+<div class="analysis"><b>リスニング</b><br>第1部は3択の応答問題、第2部は4択の会話内容理解、第3部は4択の英文内容理解。3回分とも、No.1～10、11～20、21～30の30問構成です。</div>
+<div class="pillrow"><span class="pill">語彙・熟語</span><span class="pill">会話表現</span><span class="pill">文脈理解</span><span class="pill">長文読解</span><span class="pill">Eメール</span><span class="pill">意見英作文</span><span class="pill">応答</span><span class="pill">会話理解</span><span class="pill">英文理解</span></div>
+</div>
+<div class="card">
+<h3>参照した過去問</h3>
+<ul class="muted">
+<li>2025年度第2回 準2級 一次試験</li>
+<li>2025年度第3回 準2級 一次試験</li>
+<li>2026年度第1回 準2級 一次試験</li>
+</ul>
+<p class="muted">このサイトでは、過去問本文をそのまま転載せず、確認した出題形式・語数・設問タイプをもとにオリジナル問題を作成しています。</p>
+</div>
+</section>
+
+<section id="record" class="section">
+<button class="back" onclick="openSec('home')">← メニュー</button>
+<div class="card"><h2>学習記録</h2><div id="records"></div><button class="btn" onclick="clearRecords()">記録を削除</button></div>
+</section>
+
+<section id="review" class="section">
+<button class="back" onclick="openSec('home')">← メニュー</button>
+<div class="card">
+<span class="badge">復習</span>
+<h2>間違えた問題</h2>
+<p class="muted">一度間違えた問題をこの端末に保存します。あとから問題・選択肢・正解・解説を確認できます。</p>
+<div id="reviewSummary"></div>
+<div id="reviewList"></div>
+<button class="btn" onclick="startReviewQuiz()" id="reviewStartBtn" style="display:none">間違えた問題だけ解く</button>
+<button class="btn" onclick="clearWrong()" style="margin-top:9px;background:#687386">間違えた問題をすべて削除</button>
+</div>
+</section>
+
+<section id="reviewQuiz" class="section">
+<button class="back" onclick="openSec('review')">← 間違えた問題一覧</button>
+<div class="card">
+<div class="meta"><span id="rvTitle"></span><span id="rvScore"></span></div>
+<div class="progress"><div id="rvBar" class="bar"></div></div>
+<div id="rvQuestion" class="question"></div>
+<div id="rvOptions" class="options"></div>
+<div id="rvEx" class="ex"></div>
+<button id="rvNext" class="btn next" onclick="nextReview()">次の復習問題</button>
+<div id="rvResult" class="result">
+<hr><div id="rvFinal" class="score"></div>
+<p class="muted">今回正解できた問題は、間違い一覧から自動的に外れます。</p>
+<button class="btn" onclick="openSec('review')">復習一覧を見る</button>
+</div>
+</div>
+</section>
+
+<section id="guide" class="section">
+<button class="back" onclick="openSec('home')">← メニュー</button>
+<div class="card"><h2>使い方</h2>
+<ol class="muted">
+<li>リーディング実戦では、過去問の大問構成を参考にしたリーディング問題を解きます。</li>
+<li>答えると正誤と簡単な解説が表示されます。</li>
+<li>ライティングは語数を確認しながら入力できます。</li>
+<li>リスニングはiPhone/iPadのブラウザ音声合成で英文を再生できます。</li>
+<li>成績と間違えた問題は、この端末のブラウザに保存されます。</li>
+</ol>
+<p class="muted">※英検の公式過去問そのものではなく、過去問を分析して作成したオリジナル練習問題です。</p>
+</div>
+</section>
+</main>
+
+<script>
+const reading=[
+["【語彙1】The museum will (　　　) a special exhibition next month.",["hold","borrow","escape","repair"],0,"hold an exhibition は「展示会を開催する」。"],
+["【語彙2】I had a good (　　　) of the new teacher.",["impression","direction","condition","permission"],0,"have a good impression of ～ は「～に良い印象を持つ」。"],
+["【語彙3】Please (　　　) the information before you make a decision.",["consider","invite","replace","depend"],0,"consider は「よく考える・検討する」。"],
+["【語彙4】The heavy rain (　　　) the baseball game.",["canceled","collected","repaired","improved"],0,"cancel は「中止する」。"],
+["【語彙5】This app is very (　　　) for students.",["useful","narrow","private","silent"],0,"useful は「役に立つ」。"],
+["【語彙6】She (　　　) the invitation because she was busy.",["declined","created","measured","reached"],0,"decline an invitation は「招待を断る」。"],
+["【語彙7】We need to (　　　) the meeting until Friday.",["postpone","protect","produce","prepare"],0,"postpone は「延期する」。"],
+["【語彙8】The students worked (　　　) to finish the project.",["together","nearly","suddenly","instead"],0,"work together は「一緒に取り組む」。"],
+["【語彙9】The company wants to (　　　) a new service.",["develop","disappear","damage","depend"],0,"develop は「開発する」。"],
+["【語彙10】I was (　　　) to hear that my friend won the contest.",["pleased","local","ordinary","empty"],0,"pleased は「うれしく思って」。"],
+["【熟語11】Please (　　　) attention to the teacher.",["pay","make","take","give"],0,"pay attention to ～。"],
+["【熟語12】We ran out (　　　) water during the trip.",["of","from","with","by"],0,"run out of ～ は「～を使い果たす」。"],
+["【熟語13】He decided to take (　　　) in the school event.",["part","place","care","turn"],0,"take part in ～ は「～に参加する」。"],
+["【熟語14】She is looking forward (　　　) meeting her cousin.",["to","for","at","with"],0,"look forward to の to は前置詞なので動名詞。"],
+["【熟語15】As long (　　　) you study, you can improve.",["as","than","that","while"],0,"as long as ～ は「～する限り」。"],
+["【会話16】A: Can you help me with this box? B: Sure. (　　　).",["Where should I put it?","I bought it yesterday.","It starts at five.","I have two brothers."],0,"依頼を受けて「どこに置けばいい？」と尋ねる流れ。"],
+["【会話17】A: Why are you leaving early? B: (　　　).",["I have a doctor's appointment.","It's made of wood.","I bought three tickets.","The library is large."],0,"Why に理由で答える。"],
+["【会話18】A: Did you enjoy the festival? B: (　　　).",["Yes, it was very exciting.","At the station.","For two hours.","Tomorrow morning."],0,"Did you ～? には Yes/No で答える。"],
+["【会話19】A: Could I borrow your dictionary? B: (　　　).",["Of course. Here you are.","It's about English.","I went there yesterday.","No, I don't know him."],0,"依頼に対する自然な承諾。"],
+["【会話20】A: The train is delayed. B: (　　　).",["Then let's wait here.","I bought a new train.","It was delicious.","She lives nearby."],0,"列車が遅れていることへの自然な応答。"],
+["【短文21】Mika wanted to become a nurse. She studied hard because she wanted to (　　　) her dream.",["achieve","erase","borrow","hide"],0,"achieve a dream は「夢を実現する」。"],
+["【短文22】The town built a new park. It has many trees and a small pond. The park gives local people a place to (　　　) nature.",["enjoy","avoid","damage","refuse"],0,"enjoy nature は「自然を楽しむ」。"],
+["【長文23】A local library started a weekend reading club. Children meet there twice a month and talk about books they have read. The librarians hope the club will help children enjoy reading more. What is the purpose of the club?",["To help children enjoy reading.","To teach children how to build libraries.","To sell books to children.","To prepare children for sports competitions."],0,"本文では、子どもたちが読書をより楽しめるようにすることが目的だと説明されています。"],
+["【長文24】Many people now use reusable bottles. Using one bottle many times can reduce the amount of plastic waste. Some schools have installed water stations so students can refill their bottles during the day. Why have some schools installed water stations?",["To help students refill reusable bottles.","To sell more plastic bottles.","To make students stay at school longer.","To replace school lunches."],0,"水を補充できるようにすることで、再利用ボトルを使いやすくしています。"],
+["【長文25】A family moved to a smaller town. At first, their son worried that there would be fewer things to do. However, he joined a local basketball team and soon made many friends. What happened after the family moved?",["The son made friends through basketball.","The son stopped playing sports.","The family moved back immediately.","The town had no activities."],0,"地域のバスケットボールチームに入り、友達ができました。"],
+["【長文26】A museum changed its opening hours. It now opens earlier on Saturday mornings because many families visit before lunch. The museum also created a children's activity area. Why did the museum change its hours?",["Because many families visit on Saturday mornings.","Because the museum had fewer visitors.","Because children could not enter before lunch.","Because the staff wanted to close earlier."],0,"土曜の午前に多くの家族が訪れるため、開館時間を早めました。"],
+["【長文27】Bees are important because they help many plants grow by carrying pollen from one flower to another. Some farmers are planting more flowers near their fields to give bees places to find food. Why are some farmers planting flowers?",["To give bees places to find food.","To stop plants from growing.","To make the fields smaller.","To keep people away from farms."],0,"花を植えることで、ミツバチが食べ物を見つけられる場所を増やしています。"],
+["【長文28】A student named Ken found that he often checked his phone while studying. He decided to put his phone in another room for thirty minutes at a time. After doing this for several weeks, he found it easier to finish his homework. What helped Ken study better?",["Putting his phone in another room.","Using his phone more often.","Doing homework only on weekends.","Studying with the television on."],0,"スマートフォンを別室に置くことで、勉強への集中がしやすくなりました。"],
+["【長文29】A town started a volunteer program in which high school students help older residents with simple tasks such as carrying groceries and using smartphones. The students also learn about the experiences of older people. What is one benefit of the program for students?",["They can learn from older people's experiences.","They receive free smartphones.","They no longer need to attend school.","They move to another town."],0,"高校生は高齢者の経験から学ぶことができます。"]
+];
+
+let ri=0,rs=0;
+function openSec(id){
+ document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ if(id==="record") showRecords();
+ if(id==="review") showReview();
+ scrollTo(0,0);
+}
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function startReading(){readingOrder=shuffle(reading);ri=0;rs=0;openSec("reading");document.getElementById("rResult").style.display="none";showReading()}
+let readingOrder=[];
+function showReading(){
+ const x=readingOrder[ri];document.getElementById("rTitle").textContent=`第${ri+1}問 / ${readingOrder.length}`;document.getElementById("rScore").textContent=`正解 ${rs}`;document.getElementById("rBar").style.width=`${ri/readingOrder.length*100}%`;document.getElementById("rQuestion").textContent=x[0];
+ const o=document.getElementById("rOptions");o.innerHTML="";
+ x[1].forEach((v,i)=>{const b=document.createElement("button");b.className="option";b.textContent=String.fromCharCode(65+i)+"　"+v;b.onclick=()=>answerReading(i,b);o.appendChild(b)});
+ document.getElementById("rEx").className="ex";document.getElementById("rEx").textContent="";document.getElementById("rNext").style.display="none";
+}
+function answerReading(i,b){
+ const x=readingOrder[ri];
+ document.querySelectorAll("#rOptions .option").forEach((q,n)=>{q.disabled=true;if(n===x[2])q.classList.add("correct")});
+ if(i===x[2]){rs++;b.classList.add("correct");}
+ else {b.classList.add("wrong");saveWrong("reading",x,i);}
+ document.getElementById("rScore").textContent=`正解 ${rs}`;
+ document.getElementById("rEx").textContent=(i===x[2]?"正解！ ":"不正解。 ")+x[3];
+ document.getElementById("rEx").className="ex show";
+ document.getElementById("rNext").style.display="block";
+ document.getElementById("rNext").textContent=ri===readingOrder.length-1?"結果を見る":"次の問題";
+}
+function nextReading(){
+ if(ri<readingOrder.length-1){ri++;showReading()}
+ else{let rate=Math.round(rs/readingOrder.length*100);document.getElementById("rQuestion").textContent="リーディング終了";document.getElementById("rOptions").innerHTML="";document.getElementById("rEx").className="ex";document.getElementById("rNext").style.display="none";document.getElementById("rResult").style.display="block";document.getElementById("rFinal").textContent=`${rs} / ${readingOrder.length} 問（${rate}%）`;document.getElementById("rMessage").textContent=rate>=80?"安定して解けています。":rate>=60?"間違えた分野を復習して再挑戦しましょう。":"まずは語彙・熟語と会話表現から復習しましょう。";saveRecord("リーディング",rs,readingOrder.length)}}
+function saveRecord(type,s,n){let r=JSON.parse(localStorage.getItem("eikenP2Records")||"[]");r.unshift({type,score:s,total:n,date:new Date().toLocaleString("ja-JP")});localStorage.setItem("eikenP2Records",JSON.stringify(r.slice(0,50)))}
+function showRecords(){let r=JSON.parse(localStorage.getItem("eikenP2Records")||"[]");document.getElementById("records").innerHTML=r.length?r.map(x=>`<p><b>${x.type}</b>　${x.score}/${x.total}（${Math.round(x.score/x.total*100)}%）<br><span class="muted">${x.date}</span></p>`).join(""):"<p class='muted'>まだ記録がありません。</p>"}
+function clearRecords(){localStorage.removeItem("eikenP2Records");showRecords()}
+function countWords(a,b){let t=document.getElementById(a).value.trim();let n=t?t.split(/\s+/).length:0;document.getElementById(b).textContent=n+" words"}
+function speak(text){if(!("speechSynthesis" in window)){alert("このブラウザでは音声再生に対応していません。");return}let u=new SpeechSynthesisUtterance(text);u.lang="en-US";u.rate=.85;speechSynthesis.cancel();speechSynthesis.speak(u)}
+function listenCheck(b,ok){
+ const box=b.parentElement;
+ const buttons=[...box.querySelectorAll(".option")];
+ const idx=buttons.indexOf(b);
+ buttons.forEach(x=>x.disabled=true);
+ b.classList.add(ok?"correct":"wrong");
+ if(!ok){
+   const card=box.closest(".card");
+   const q=card.querySelector("h2")?.textContent||"リスニング";
+   const question=[...card.querySelectorAll("p")].map(x=>x.innerText).find(t=>t.includes("？")||t.includes("?"))||"リスニング問題";
+   const options=buttons.map(x=>x.innerText);
+   const correct=buttons.find(x=>x.classList.contains("correct"))?.innerText||"";
+   const ex=[...card.querySelectorAll(".ex")][0]?.innerText||"";
+   saveWrong("listening",{id:q+"|"+question,question:q+"："+question,options,correctIndex:buttons.findIndex(x=>x.classList.contains("correct")),explanation:ex},idx);
+ }
+ let ex=box.nextElementSibling;if(ex&&ex.classList.contains("ex"))ex.classList.add("show");
+}
+function getWrong(){return JSON.parse(localStorage.getItem("eikenP2Wrong")||"[]")}
+function saveWrong(type,x,userIndex){
+ let r=getWrong();
+ let item;
+ if(type==="reading"){
+   const id="r-"+x[0];
+   item={id,type,question:x[0],options:x[1],correctIndex:x[2],explanation:x[3],userIndex};
+ }else{
+   item={...x,type,userIndex};
+ }
+ if(!r.some(v=>v.id===item.id)){r.push(item);localStorage.setItem("eikenP2Wrong",JSON.stringify(r))}
+}
+function showReview(){
+ const r=getWrong();
+ const summary=document.getElementById("reviewSummary");
+ const list=document.getElementById("reviewList");
+ const start=document.getElementById("reviewStartBtn");
+ summary.innerHTML=r.length?`<p><b>${r.length}問</b>が復習リストに入っています。</p>`:`<p class="muted">現在、復習する問題はありません。問題を間違えるとここに保存されます。</p>`;
+ start.style.display=r.length?"block":"none";
+ if(!r.length){list.innerHTML="";return}
+ list.innerHTML=r.map((x,n)=>{
+   const correct=x.options?.[x.correctIndex]||x.correct||"";
+   return `<div class="reviewItem">
+     <span class="wrongTag">第${n+1}問・${x.type==="reading"?"リーディング":"リスニング"}</span>
+     <h3>${escapeHtml(x.question)}</h3>
+     <div class="answerBox"><b>正解：</b>${escapeHtml(correct)}<br><span>${escapeHtml(x.explanation||"")}</span></div>
+     <button class="btn" style="margin-top:9px;padding:8px 11px;font-size:12px;background:#687386" onclick="removeWrong('${encodeURIComponent(x.id)}')">この問題を復習済みにする</button>
+   </div>`;
+ }).join("");
+}
+function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function removeWrong(enc){let id=decodeURIComponent(enc);let r=getWrong().filter(x=>x.id!==id);localStorage.setItem("eikenP2Wrong",JSON.stringify(r));showReview()}
+function clearWrong(){localStorage.removeItem("eikenP2Wrong");showReview()}
+let reviewOrder=[],rvi=0,rvs=0;
+function startReviewQuiz(){
+ reviewOrder=shuffle(getWrong());rvi=0;rvs=0;
+ if(!reviewOrder.length){openSec("review");return}
+ openSec("reviewQuiz");showReviewQ();
+}
+function showReviewQ(){
+ const x=reviewOrder[rvi];
+ document.getElementById("rvTitle").textContent=`復習 ${rvi+1} / ${reviewOrder.length}`;
+ document.getElementById("rvScore").textContent=`正解 ${rvs}`;
+ document.getElementById("rvBar").style.width=`${rvi/reviewOrder.length*100}%`;
+ document.getElementById("rvQuestion").textContent=x.question;
+ const o=document.getElementById("rvOptions");o.innerHTML="";
+ x.options.forEach((v,i)=>{let b=document.createElement("button");b.className="option";b.textContent=String.fromCharCode(65+i)+"　"+v;b.onclick=()=>answerReview(i,b);o.appendChild(b)});
+ document.getElementById("rvEx").className="ex";document.getElementById("rvEx").textContent="";
+ document.getElementById("rvNext").style.display="none";document.getElementById("rvResult").style.display="none";
+}
+function answerReview(i,b){
+ const x=reviewOrder[rvi];
+ document.querySelectorAll("#rvOptions .option").forEach((q,n)=>{q.disabled=true;if(n===x.correctIndex)q.classList.add("correct")});
+ const ok=i===x.correctIndex;
+ if(ok){
+   rvs++;b.classList.add("correct");
+   let r=getWrong().filter(v=>v.id!==x.id);localStorage.setItem("eikenP2Wrong",JSON.stringify(r));
+ }else b.classList.add("wrong");
+ document.getElementById("rvScore").textContent=`正解 ${rvs}`;
+ document.getElementById("rvEx").textContent=(ok?"正解！ ":"まだ復習が必要です。 ")+(x.explanation||"");
+ document.getElementById("rvEx").className="ex show";
+ document.getElementById("rvNext").style.display="block";
+ document.getElementById("rvNext").textContent=rvi===reviewOrder.length-1?"復習結果を見る":"次の復習問題";
+}
+function nextReview(){
+ if(rvi<reviewOrder.length-1){rvi++;showReviewQ()}
+ else{
+   document.getElementById("rvQuestion").textContent="復習終了";
+   document.getElementById("rvOptions").innerHTML="";
+   document.getElementById("rvEx").className="ex";
+   document.getElementById("rvNext").style.display="none";
+   document.getElementById("rvResult").style.display="block";
+   document.getElementById("rvFinal").textContent=`${rvs} / ${reviewOrder.length} 問 正解`;
+ }
+}
+</script>
+</body>
+</html>
