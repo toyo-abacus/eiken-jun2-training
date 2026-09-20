@@ -305,10 +305,38 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 <button class="btn" onclick="startG5Reading()">リーディングを練習</button>
 <button class="btn" onclick="startG5Listening()">リスニングを練習</button>
 <button class="btn" onclick="openSec('g5actualAudio')" style="background:#315a9b">🎧 2026年度第1回・実際の5級音声を聞く</button>
+<button class="btn" onclick="showG5Review()" style="background:#687386">🔁 間違えた問題・復習</button>
 <div class="note">5級には準2級のようなライティング問題はありません。別枠でスピーキング練習を追加できます。</div>
 </div>
 </section>
 
+<section id="g5review" class="section">
+<button class="back" onclick="openSec('g5menu')">← 5級メニュー</button>
+<div class="card">
+<span class="badge">5級・復習</span>
+<h2>間違えた問題</h2>
+<p class="muted">5級で間違えた問題だけを、この端末に保存します。問題・選択肢・正解・解説を確認できます。</p>
+<div id="g5ReviewSummary"></div>
+<div id="g5ReviewList"></div>
+<button class="btn" onclick="startG5ReviewQuiz()" id="g5ReviewStartBtn" style="display:none">間違えた問題だけ解く</button>
+<button class="btn" onclick="clearG5Wrong()" style="margin-top:9px;background:#687386">5級の間違えた問題をすべて削除</button>
+</div>
+</section>
+
+<section id="g5reviewQuiz" class="section">
+<button class="back" onclick="showG5Review()">← 5級の間違えた問題一覧</button>
+<div class="card">
+<div class="meta"><span id="g5rvTitle"></span><span id="g5rvScore"></span></div>
+<div class="progress"><div id="g5rvBar" class="bar"></div></div>
+<div id="g5rvPart" class="badge"></div>
+<div id="g5rvQuestion" class="question"></div>
+<div id="g5rvAudio"></div>
+<div id="g5rvOptions" class="options"></div>
+<div id="g5rvEx" class="ex"></div>
+<button id="g5rvNext" class="btn next" style="display:none" onclick="nextG5Review()">次の復習問題</button>
+<div id="g5rvResult" class="result" style="display:none"><hr><div id="g5rvFinal" class="score"></div><p class="muted">今回正解できた問題は、5級の間違い一覧から自動的に外れます。</p><button class="btn" onclick="showG5Review()">復習一覧を見る</button></div>
+</div>
+</section>
 
 <section id="g5actualAudio" class="section">
 <button class="back" onclick="openSec('g5menu')">← 5級メニュー</button>
@@ -559,7 +587,7 @@ function showG5Reading(){
 function answerG5Reading(i,b){
  const x=g5Reading[g5ri];
  document.querySelectorAll("#g5rOptions .option").forEach((q,n)=>{q.disabled=true;if(n===x[2])q.classList.add("correct")});
- if(i===x[2]){g5rs++;b.classList.add("correct")}else{b.classList.add("wrong");saveWrong("reading",{id:"g5-"+g5ri,question:x[0],options:x[1],correctIndex:x[2],explanation:x[3]},i)}
+ if(i===x[2]){g5rs++;b.classList.add("correct")}else{b.classList.add("wrong");saveG5Wrong({id:"g5-r-"+g5ri,part:"リーディング",type:"reading",question:x[0],options:x[1],correctIndex:x[2],explanation:x[3]},i)}
  document.getElementById("g5rScore").textContent=`正解 ${g5rs}`;
  document.getElementById("g5rEx").textContent=(i===x[2]?"正解！ ":"不正解。 ")+x[3];
  document.getElementById("g5rEx").className="ex show";
@@ -756,7 +784,7 @@ function answerG5Listening(i,b){
  const x=g5ListeningSession[g5ListeningPos];
  document.querySelectorAll("#g5lOptions .option").forEach((q,n)=>{q.disabled=true;if(n===x[3])q.classList.add("correct")});
  if(i===x[3]){g5ls++;b.classList.add("correct")}
- else{b.classList.add("wrong");saveWrong("listening",{id:"g5-"+g5ListeningPos+"-"+x[1],question:x[1],options:x[2],correctIndex:x[3],explanation:x[4]},i)}
+ else{b.classList.add("wrong");saveG5Wrong({id:"g5-l-"+g5ListeningPos+"-"+x[1],part:x[0],type:"listening",question:x[1],options:x[2],correctIndex:x[3],explanation:x[4]},i)}
  document.getElementById("g5lScore").textContent=`正解 ${g5ls}`;
  document.getElementById("g5lEx").textContent=(i===x[3]?"正解！ ":"不正解。 ")+x[4];
  document.getElementById("g5lEx").className="ex show";
@@ -772,6 +800,60 @@ function nextG5Listening(){
  }
 }
 function getWrong(){return JSON.parse(localStorage.getItem("eikenP2Wrong")||"[]")}
+function getG5Wrong(){try{return JSON.parse(localStorage.getItem("eikenG5Wrong")||"[]")}catch(e){return []}}
+function saveG5Wrong(x,userIndex){
+ let r=getG5Wrong();
+ const item={...x,userIndex};
+ if(!r.some(v=>v.id===item.id)){r.push(item);localStorage.setItem("eikenG5Wrong",JSON.stringify(r))}
+}
+function showG5Review(){
+ const r=getG5Wrong();
+ const summary=document.getElementById("g5ReviewSummary");
+ const list=document.getElementById("g5ReviewList");
+ const start=document.getElementById("g5ReviewStartBtn");
+ summary.innerHTML=r.length?`<p><b>${r.length}問</b>が5級の復習リストに入っています。</p>`:`<p class="muted">現在、5級で復習する問題はありません。問題を間違えるとここに保存されます。</p>`;
+ start.style.display=r.length?"block":"none";
+ if(!r.length){list.innerHTML="";openSec("g5review");return}
+ list.innerHTML=r.map((x,n)=>{
+   const correct=x.options?.[x.correctIndex]||"";
+   return `<div class="reviewItem"><span class="wrongTag">第${n+1}問・${escapeHtml(x.part|| (x.type==="reading"?"リーディング":"リスニング"))}</span><h3>${escapeHtml(x.question)}</h3><div class="answerBox"><b>正解：</b>${escapeHtml(correct)}<br><span>${escapeHtml(x.explanation||"")}</span></div>${x.type==="listening"?`<button class="btn" style="margin-top:9px;padding:8px 11px;font-size:12px;background:#315a9b" onclick="speakG5Review(${n})">🎧 音声をもう一度聞く</button>`:""}<button class="btn" style="margin-top:9px;padding:8px 11px;font-size:12px;background:#687386" onclick="removeG5Wrong('${encodeURIComponent(x.id)}')">この問題を復習済みにする</button></div>`;
+ }).join("");
+ openSec("g5review");
+}
+function speakG5Review(n){
+ const x=getG5Wrong()[n]; if(!x)return;
+ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(x.question);u.lang="en-US";u.rate=.82;speechSynthesis.speak(u);
+}
+function removeG5Wrong(enc){let id=decodeURIComponent(enc);localStorage.setItem("eikenG5Wrong",JSON.stringify(getG5Wrong().filter(x=>x.id!==id)));showG5Review()}
+function clearG5Wrong(){localStorage.removeItem("eikenG5Wrong");showG5Review()}
+let g5ReviewOrder=[],g5rvi=0,g5rvs=0;
+function startG5ReviewQuiz(){
+ g5ReviewOrder=shuffleCopy(getG5Wrong());g5rvi=0;g5rvs=0;
+ if(!g5ReviewOrder.length){showG5Review();return}
+ openSec("g5reviewQuiz");showG5ReviewQ();
+}
+function showG5ReviewQ(){
+ const x=g5ReviewOrder[g5rvi];
+ document.getElementById("g5rvTitle").textContent=`復習 ${g5rvi+1} / ${g5ReviewOrder.length}`;
+ document.getElementById("g5rvScore").textContent=`正解 ${g5rvs}`;
+ document.getElementById("g5rvBar").style.width=`${g5rvi/g5ReviewOrder.length*100}%`;
+ document.getElementById("g5rvPart").textContent=x.part||"復習";
+ document.getElementById("g5rvQuestion").textContent=x.question;
+ const audio=document.getElementById("g5rvAudio");audio.innerHTML=x.type==="listening"?`<button class="listenReplayBtn" style="display:inline-block" onclick="speakG5ReviewQ()">🔁 音声を聞く</button>`:"";
+ const o=document.getElementById("g5rvOptions");o.innerHTML="";
+ x.options.forEach((v,i)=>{let b=document.createElement("button");b.className="option";b.textContent=`${i+1}　${v}`;b.onclick=()=>answerG5Review(i,b);o.appendChild(b)});
+ document.getElementById("g5rvEx").className="ex";document.getElementById("g5rvEx").textContent="";document.getElementById("g5rvNext").style.display="none";document.getElementById("g5rvResult").style.display="none";
+}
+function speakG5ReviewQ(){const x=g5ReviewOrder[g5rvi];speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(x.question);u.lang="en-US";u.rate=.82;speechSynthesis.speak(u)}
+function answerG5Review(i,b){
+ const x=g5ReviewOrder[g5rvi];document.querySelectorAll("#g5rvOptions .option").forEach((q,n)=>{q.disabled=true;if(n===x.correctIndex)q.classList.add("correct")});
+ const ok=i===x.correctIndex;if(ok){g5rvs++;b.classList.add("correct");localStorage.setItem("eikenG5Wrong",JSON.stringify(getG5Wrong().filter(v=>v.id!==x.id)))}else b.classList.add("wrong");
+ document.getElementById("g5rvScore").textContent=`正解 ${g5rvs}`;document.getElementById("g5rvEx").textContent=(ok?"正解！ ":"まだ復習が必要です。 ")+(x.explanation||"");document.getElementById("g5rvEx").className="ex show";document.getElementById("g5rvNext").style.display="block";document.getElementById("g5rvNext").textContent=g5rvi===g5ReviewOrder.length-1?"復習結果を見る":"次の復習問題";
+}
+function nextG5Review(){
+ if(g5rvi<g5ReviewOrder.length-1){g5rvi++;showG5ReviewQ()}else{document.getElementById("g5rvQuestion").textContent="復習終了";document.getElementById("g5rvOptions").innerHTML="";document.getElementById("g5rvNext").style.display="none";document.getElementById("g5rvResult").style.display="block";document.getElementById("g5rvFinal").textContent=`${g5rvs} / ${g5ReviewOrder.length} 問 正解`}
+}
+
 function saveWrong(type,x,userIndex){
  let r=getWrong();
  let item;
