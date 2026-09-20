@@ -64,6 +64,13 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 <div id="currentGrade" class="currentGrade">現在：準2級</div>
 </div>
 
+
+
+
+</section>
+
+<section id="pre2menu" class="section">
+<button class="back" onclick="openSec('home')">← 級選択</button>
 <div class="card">
 <span class="badge">過去問分析反映版</span>
 <h2>英検準2級を本番形式で練習</h2>
@@ -79,6 +86,7 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 <button class="card menu pre2Only" onclick="openSec('review')"><div class="ico">🔁</div><b>間違えた問題・復習</b><span>間違えた問題を後から確認・再挑戦</span></button>
 <button class="card menu pre2Only" onclick="openSec('guide')"><div class="ico">ℹ️</div><b>使い方</b><span>サイトの学習方法と注意点</span></button>
 </div>
+</section>
 </section>
 
 <section id="reading" class="section">
@@ -503,7 +511,7 @@ function selectGrade(g){
  currentGrade=g;
  document.getElementById("currentGrade").textContent="現在："+(g==="5"?"5級":"準2級");
  document.querySelectorAll(".grade5Only").forEach(x=>x.style.display=g==="5"?"block":"none");
- if(g==="5") openSec("g5menu"); else openSec("home");
+ if(g==="5") openSec("g5menu"); else openSec("pre2menu");
 }
 const g5Reading=[
 ["I play soccer after school. I need my ( ).",["book","ball","desk","chair"],1,"soccerにはball（ボール）が必要です。"],
@@ -840,4 +848,5 @@ function nextReview(){
 }
 </script>
 </body>
-</html>
+</html<button class="back" onclick="openSec('home')">← 級選択</button>
+>
