@@ -37,6 +37,15 @@ textarea{width:100%;min-height:150px;border:2px solid #dce2eb;border-radius:12px
 .timer{font-size:28px;font-weight:800;text-align:center;margin:5px}.audioBox{background:#f6f8fb;border:1px solid #e1e6ee;border-radius:14px;padding:12px;margin:12px 0}.audioBox h3{margin:0 0 6px}.audioBox audio{margin-top:5px}.grade5Only{display:none}.gradeGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.gradeBtn{border:1px solid #dbe2ec;border-radius:16px;background:#fff;padding:18px 10px;text-align:left;cursor:pointer}.gradeBtn b{display:block;font-size:22px}.gradeBtn span{font-size:12px;color:#687386}.gradeBtn.g5{background:#f7fbff}.currentGrade{margin-top:10px;text-align:center;font-weight:700;font-size:13px;color:#245ca9}.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}.statgrid div{background:#f5f7fa;border-radius:12px;padding:10px;text-align:center}.statgrid b{display:block;font-size:20px}.statgrid span{font-size:11px;color:#687386}.note{background:#f8f5ea;border-radius:10px;padding:10px;margin-top:10px;font-size:12px;color:#5b5542}.sortWord{border:0;background:#eef2f7;border-radius:99px;padding:8px 12px;cursor:pointer;font-weight:700}.sortWord.selected{opacity:.45}.sortPicked{background:#eaf1ff;color:#245ca9;border-radius:99px;padding:7px 10px;margin:3px;cursor:pointer}.reviewItem{border:1px solid #dfe5ee;border-radius:13px;padding:13px;margin:10px 0;background:#fbfcfe}.reviewItem h3{font-size:15px;line-height:1.5;margin:0 0 8px}.answerBox{background:#eaf8f0;border-radius:9px;padding:9px;margin-top:8px;font-size:13px}.wrongTag{display:inline-block;background:#fff0f1;color:#b42332;border-radius:99px;padding:4px 8px;font-size:11px;font-weight:700;margin-bottom:6px}
 hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 @media(max-width:600px){.grid{grid-template-columns:1fr}.menu{min-height:96px}h1{font-size:21px}.question{font-size:18px}}
+
+.listenHiddenQuestion{font-size:20px;text-align:center;padding:18px 10px;color:#333}
+.listenAudioCard{margin:14px 0 18px;padding:24px 16px;border-radius:18px;background:#f5f7fb;border:1px solid #dfe4ec;text-align:center}
+.listenAudioIcon{font-size:42px;margin-bottom:8px}
+.listenAudioTitle{font-size:22px;font-weight:700;margin-bottom:8px}
+.listenAudioSub{font-size:14px;color:#687386;margin-bottom:18px}
+.listenPlayBtn,.listenReplayBtn{border:0;border-radius:12px;padding:13px 22px;font-size:17px;font-weight:700;cursor:pointer;background:#315a9b;color:#fff;margin:4px}
+.listenReplayBtn{background:#667085}
+.listenStatus{margin-top:10px;font-size:13px;color:#687386}
 </style>
 </head>
 <body>
@@ -355,7 +364,7 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 <button class="back" onclick="openSec('g5menu')">← 5級メニュー</button>
 <div class="card">
 <span class="badge">5級・リスニング</span>
-<p class="muted">過去問の第1部・第2部・第3部の形式を分析したオリジナル問題を大量に収録。第1部10問・第2部5問・第3部10問を各問題プールからランダムに出題します。</p>
+<p class="muted">過去問の第1部・第2部・第3部の形式を分析したオリジナル問題を大量に収録。第1部10問・第2部5問・第3部10問を各問題プールからランダムに出題。音声を先に聞き、終了後に問題と選択肢を表示します。</p>
 <div class="meta"><span id="g5lTitle">1 / 25</span><span id="g5lScore">正解 0</span></div>
 <div class="progress"><div id="g5lBar" class="bar"></div></div>
 <div id="g5lPart" class="badge"></div>
@@ -595,12 +604,79 @@ function showG5Listening(){
  document.getElementById("g5lScore").textContent=`正解 ${g5ls}`;
  document.getElementById("g5lBar").style.width=`${g5ListeningPos/g5ListeningSession.length*100}%`;
  document.getElementById("g5lPart").textContent=x[0];
- document.getElementById("g5lQuestion").textContent=x[1];
- const o=document.getElementById("g5lOptions");o.innerHTML="";
- x[2].forEach((v,i)=>{const b=document.createElement("button");b.className="option";b.textContent=`${i+1}　${v}`;b.onclick=()=>answerG5Listening(i,b);o.appendChild(b)});
- document.getElementById("g5lEx").className="ex";document.getElementById("g5lEx").textContent="";
- document.getElementById("g5lNext").style.display="none";
+
+ const q=document.getElementById("g5lQuestion");
+ const o=document.getElementById("g5lOptions");
+ const ex=document.getElementById("g5lEx");
+ const next=document.getElementById("g5lNext");
+
+ // Before the audio is heard, hide all question text and choices.
+ q.textContent="🎧 音声を聞いてください";
+ q.className="listenHiddenQuestion";
+ o.innerHTML="";
+ ex.className="ex";
+ ex.textContent="";
+ next.style.display="none";
+ next.textContent="次の問題";
+
+ // Build a simple audio-first panel. Browser speech is used for original questions.
+ const panel=document.getElementById("g5lAudioPanel");
+ if(panel){
+   panel.innerHTML=`
+     <div class="listenAudioCard">
+       <div class="listenAudioIcon">🎧</div>
+       <div class="listenAudioTitle">音声を聞いてください</div>
+       <div class="listenAudioSub">音声を聞き終わるまで、問題と選択肢は表示されません。</div>
+       <button class="listenPlayBtn" onclick="speakG5AndReveal()">▶ 音声を再生</button>
+       <button class="listenReplayBtn" onclick="speakG5()" style="display:none">🔁 もう一度聞く</button>
+       <div id="g5lAudioStatus" class="listenStatus">再生前</div>
+     </div>`;
+ }
 }
+
+function revealG5Listening(){
+ const x=g5ListeningSession[g5ListeningPos];
+ const q=document.getElementById("g5lQuestion");
+ const o=document.getElementById("g5lOptions");
+ const ex=document.getElementById("g5lEx");
+ const next=document.getElementById("g5lNext");
+
+ q.textContent = x[1];
+ q.className="";
+ o.innerHTML="";
+ x[2].forEach((v,i)=>{
+   const b=document.createElement("button");
+   b.className="option";
+   b.textContent=`${i+1}　${v}`;
+   b.onclick=()=>answerG5Listening(i,b);
+   o.appendChild(b);
+ });
+ ex.className="ex";
+ ex.textContent="";
+ next.style.display="none";
+
+ const panel=document.getElementById("g5lAudioPanel");
+ if(panel){
+   const play=panel.querySelector(".listenPlayBtn");
+   const replay=panel.querySelector(".listenReplayBtn");
+   const status=panel.querySelector(".listenStatus");
+   if(play) play.style.display="none";
+   if(replay) replay.style.display="inline-block";
+   if(status) status.textContent="音声再生済み";
+ }
+}
+
+function speakG5AndReveal(){
+ const x=g5ListeningSession[g5ListeningPos];
+ const status=document.getElementById("g5lAudioStatus");
+ if(status) status.textContent="再生中…";
+ speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(x[1]);
+ u.lang="en-US";u.rate=.82;
+ u.onend=()=>revealG5Listening();
+ speechSynthesis.speak(u);
+}
+
 function speakG5(){
  const x=g5ListeningSession[g5ListeningPos];
  speechSynthesis.cancel();
