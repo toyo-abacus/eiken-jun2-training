@@ -72,9 +72,8 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 <div class="grid">
 <button class="card menu" onclick="startReading()"><div class="ico">📝</div><b>リーディング実戦</b><span>語彙・会話・文法・長文など約80問からランダム出題</span></button>
 <button class="card menu pre2Only" onclick="openSec('writing')"><div class="ico">✏️</div><b>ライティング</b><span>Eメール＋意見英作文を本番型で練習</span></button>
-<button class="card menu pre2Only" onclick="openSec('listening')"><div class="ico">🎧</div><b>リスニング</b><span>第1部・第2部・第3部の形式で練習</span></button>
+<button class="card menu pre2Only" onclick="startListeningQuiz()"><div class="ico">🎧</div><b>リスニング</b><span>音声を先に聞いてから回答</span></button>
 <button class="card menu pre2Only" onclick="openSec('pre2actualAudio')"><div class="ico">🎵</div><b>実際のリスニング音声</b><span>提供された準2級の実際の音声を再生</span></button>
-<button class="card menu" onclick="startListeningQuiz()"><div class="ico">🔊</div><b>リスニング30問</b><span>過去問の3部構成を参考にした追加問題</span></button>
 <button class="card menu pre2Only" onclick="openSec('analysis')"><div class="ico">📊</div><b>過去問分析</b><span>3回分から確認できた出題構成</span></button>
 <button class="card menu pre2Only" onclick="openSec('record')"><div class="ico">📈</div><b>学習記録</b><span>この端末に保存した成績</span></button>
 <button class="card menu pre2Only" onclick="openSec('review')"><div class="ico">🔁</div><b>間違えた問題・復習</b><span>間違えた問題を後から確認・再挑戦</span></button>
@@ -201,47 +200,32 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 <section id="listening" class="section">
 <button class="back" onclick="openSec('home')">← メニュー</button>
 <div class="card">
-<span class="badge">リスニング 第1部</span>
-<h2>応答問題</h2>
-<p class="muted">本番では対話の最後の発言に対する適切な応答を選ぶ形式です。</p>
-<p><b>“I heard you moved to a new apartment. How do you like it?”</b></p>
-<div class="options">
-<button class="option" onclick="listenCheck(this,true)">I really like it. It is close to my school.</button>
-<button class="option" onclick="listenCheck(this,false)">At seven o'clock yesterday.</button>
-<button class="option" onclick="listenCheck(this,false)">I bought two apples.</button>
-</div><div id="lex1" class="ex">自然な応答は「とても気に入っています。学校に近いです。」です。</div>
-<button class="btn" onclick="speak('I heard you moved to a new apartment. How do you like it?')">▶ 英文を聞く</button>
+<span class="badge">準2級 リスニング</span>
+<h2>リスニング練習</h2>
+<p class="muted">音声を先に聞き、再生が終わってから問題文と選択肢を表示します。</p>
+<div class="statgrid">
+<div><b>30問</b><span>1回の練習</span></div>
+<div><b>3部</b><span>本番形式</span></div>
+<div><b>ランダム</b><span>出題順</span></div>
 </div>
-<div class="card">
-<span class="badge">リスニング 第2部</span>
-<h2>会話内容理解</h2>
-<p><b>A:</b> Are you going to the school festival tomorrow?<br><b>B:</b> Yes. I have to help at the food stand in the morning. After that, I want to watch the music show.</p>
-<p><b>What will B do in the morning?</b></p>
-<div class="options">
-<button class="option" onclick="listenCheck(this,true)">Help at the food stand.</button>
-<button class="option" onclick="listenCheck(this,false)">Watch the music show.</button>
-<button class="option" onclick="listenCheck(this,false)">Go shopping.</button>
-<button class="option" onclick="listenCheck(this,false)">Practice basketball.</button>
-</div><div id="lex2" class="ex">Bは午前中に food stand を手伝うと言っています。</div>
-<button class="btn" onclick="speak('Are you going to the school festival tomorrow? Yes. I have to help at the food stand in the morning. After that, I want to watch the music show.')">▶ 英文を聞く</button>
-</div>
-<div class="card">
-<span class="badge">リスニング 第3部</span>
-<h2>英文内容理解</h2>
-<p class="muted">短い説明文を聞き、内容について答える形式です。</p>
-<p><b>本文：</b>A small library in a town started a bicycle delivery service. Volunteers take books to older people who cannot easily visit the library. The service is used by many residents.</p>
-<p><b>Why did the library start the service?</b></p>
-<div class="options">
-<button class="option" onclick="listenCheck(this,false)">To sell more bicycles.</button>
-<button class="option" onclick="listenCheck(this,true)">To help people who cannot easily visit the library.</button>
-<button class="option" onclick="listenCheck(this,false)">To close the library earlier.</button>
-<button class="option" onclick="listenCheck(this,false)">To teach volunteers to ride bicycles.</button>
-</div><div id="lex3" class="ex">図書館へ行くことが難しい高齢者などを助けるためです。</div>
-<button class="btn" onclick="speak('A small library in a town started a bicycle delivery service. Volunteers take books to older people who cannot easily visit the library. The service is used by many residents. Why did the library start the service?')">▶ 英文を聞く</button>
+<button class="btn" onclick="startListeningQuiz()">リスニングを開始</button>
+<button class="btn" onclick="openSec('pre2actualAudio')" style="background:#315a9b">🎧 実際のリスニング音声</button>
 </div>
 </section>
 
-<section id="lquiz" class="section"><button class="back" onclick="openSec('home')">← メニュー</button><div class="card"><div class="meta"><span id="lTitle"></span><span id="lScore"></span></div><div class="progress"><div id="lBar" class="bar"></div></div><div id="lQ" class="question"></div><button id="lPlay" class="btn">▶ 英文を聞く</button><div id="lOpts" class="options" style="margin-top:12px"></div><div id="lEx" class="ex"></div><button id="lNext" class="btn next" onclick="nextLQ()">次の問題</button><div id="lResult" class="result"><hr><div id="lFinal" class="score"></div><p id="lMsg" class="muted"></p><button class="btn" onclick="startListeningQuiz()">もう一度挑戦</button></div></div></section>
+<section id="lquiz" class="section">
+<button class="back" onclick="openSec('home')">← メニュー</button>
+<div class="card">
+<div class="meta"><span id="lTitle"></span><span id="lScore"></span></div>
+<div class="progress"><div id="lBar" class="bar"></div></div>
+<div id="lPart" class="badge"></div>
+<div id="lQ" class="question listenHiddenQuestion">🎧 音声を聞いてください</div>
+<div id="lAudioPanel"></div>
+<div id="lOpts" class="options" style="margin-top:12px"></div>
+<div id="lEx" class="ex"></div>
+<button id="lNext" class="btn next" onclick="nextLQ()">次の問題</button>
+<div id="lResult" class="result"><hr><div id="lFinal" class="score"></div><p id="lMsg" class="muted"></p><button class="btn" onclick="startListeningQuiz()">もう一度挑戦</button></div>
+</div></section>
 
 <section id="analysis" class="section">
 <button class="back" onclick="openSec('home')">← メニュー</button>
@@ -579,6 +563,82 @@ function nextG5Reading(){
  else{document.getElementById("g5rQuestion").textContent=`終了：${g5rs} / ${g5Reading.length} 問正解`;document.getElementById("g5rOptions").innerHTML="";document.getElementById("g5rNext").style.display="none"}
 }
 
+
+const pre2ListeningPool=[["第1部","How do you like your new apartment?",["I really like it. It is close to my school.","At seven o'clock yesterday.","I bought two apples."],0,"質問に対して自然な応答を選びます。"],["第1部","What time does the movie start?",["At six thirty.","In the library.","With my brother."],0,"質問に対して自然な応答を選びます。"],["第1部","Would you like some coffee?",["Yes, please. Thank you.","It's on the table.","I went there yesterday."],0,"質問に対して自然な応答を選びます。"],["第1部","How was your trip to Kyoto?",["It was great. I saw many temples.","By train every morning.","Next Sunday."],0,"質問に対して自然な応答を選びます。"],["第1部","Why are you carrying an umbrella?",["Because it may rain later.","At the station.","I bought it yesterday."],0,"質問に対して自然な応答を選びます。"],["第1部","Could you help me with this box?",["Sure. No problem.","It is a blue box.","At three o'clock."],0,"質問に対して自然な応答を選びます。"],["第1部","What do you think of this movie?",["I think it is very interesting.","I watched it at home.","At eight tonight."],0,"質問に対して自然な応答を選びます。"],["第1部","When will you finish your homework?",["I'll finish it before dinner.","I finished it at school.","It was difficult."],0,"質問に対して自然な応答を選びます。"],["第1部","Where did you buy that jacket?",["I bought it at a department store.","It is very warm.","Last winter."],0,"質問に対して自然な応答を選びます。"],["第1部","Are you going to the concert tonight?",["Yes, I'm really looking forward to it.","It starts at seven.","It was at the hall."],0,"質問に対して自然な応答を選びます。"],["第2部","A: Are you going to the school festival tomorrow? B: Yes. I have to help at the food stand in the morning. After that, I want to watch the music show. What will B do in the morning?",["Help at the food stand.","Watch the music show.","Go shopping.","Practice basketball."],0,"対話の内容から質問の答えを選びます。"],["第2部","A: Did you finish the report? B: Almost. I need to check the numbers one more time. What does B need to do?",["Check the numbers.","Write a new report.","Call the teacher.","Print a ticket."],0,"対話の内容から質問の答えを選びます。"],["第2部","A: How will you get to the airport? B: My brother will drive me there. How will the speaker get to the airport?",["By car.","By train.","By bus.","By bicycle."],0,"対話の内容から質問の答えを選びます。"],["第2部","A: What are you doing this weekend? B: I'm going to visit my grandmother on Saturday. What will B do on Saturday?",["Visit a grandmother.","Go to a concert.","Study at the library.","Play tennis."],0,"対話の内容から質問の答えを選びます。"],["第2部","A: Why didn't you eat lunch? B: I was too busy at work. Why didn't B eat lunch?",["B was too busy.","B wasn't hungry.","B forgot the restaurant.","B was at home."],0,"対話の内容から質問の答えを選びます。"],["第2部","A: Which book do you recommend? B: The blue one. It's easy to read and very funny. Which book does B recommend?",["The blue one.","The red one.","The new one.","The long one."],0,"対話の内容から質問の答えを選びます。"],["第2部","A: Can you come to my party Friday? B: I'm sorry, I have a piano lesson that evening. Why can't B come?",["Because of a piano lesson.","Because of a family trip.","Because of work.","Because of a test."],0,"対話の内容から質問の答えを選びます。"],["第2部","A: What did you buy at the store? B: I bought some fruit and a bottle of water. What did B buy?",["Fruit and water.","Bread and milk.","A notebook and a pen.","A cake and coffee."],0,"対話の内容から質問の答えを選びます。"],["第2部","A: Where are you going after school? B: I'm meeting Ken at the library. Where is B going after school?",["The library.","The gym.","The station.","The park."],0,"対話の内容から質問の答えを選びます。"],["第2部","A: When can we discuss the project? B: How about after lunch? When can they discuss the project?",["After lunch.","Before breakfast.","Tomorrow morning.","Next week."],0,"対話の内容から質問の答えを選びます。"],["第3部","A small library started a bicycle delivery service. Volunteers take books to older people who cannot easily visit the library. Why did the library start the service?",["To help people who cannot easily visit the library.","To sell more bicycles.","To close the library earlier.","To teach volunteers to ride bicycles."],0,"英文の内容を聞き取り、質問に合う答えを選びます。"],["第3部","Mika usually walks to school, but today she took a bus because it was raining heavily. Why did Mika take a bus?",["Because it was raining heavily.","Because she was late for school.","Because her bicycle was broken.","Because she wanted to meet a friend."],0,"英文の内容を聞き取り、質問に合う答えを選びます。"],["第3部","Tom joined a cooking class last month. He learned how to make soup and bread. What did Tom learn to make?",["Soup and bread.","Cakes and cookies.","Pasta and salad.","Rice and noodles."],0,"英文の内容を聞き取り、質問に合う答えを選びます。"],["第3部","The town opened a new park near the station. It has a large playground and many trees. Where is the new park?",["Near the station.","Near the school.","Behind the library.","Next to the hospital."],0,"英文の内容を聞き取り、質問に合う答えを選びます。"],["第3部","Yuki wanted to buy a new backpack. She chose a small blue one because she needed it for a short trip. Why did Yuki choose a small backpack?",["For a short trip.","Because it was the cheapest.","Because her old one was lost.","For school every day."],0,"英文の内容を聞き取り、質問に合う答えを選びます。"],["第3部","A family went to the beach early in the morning. They played volleyball and ate lunch together. What did the family do at the beach?",["They played volleyball and ate lunch.","They went swimming at night.","They bought new bicycles.","They watched a movie."],0,"英文の内容を聞き取り、質問に合う答えを選びます。"],["第3部","Ken's science club meets every Wednesday after school. This month, the students are studying plants. When does the science club meet?",["Every Wednesday after school.","Every Monday morning.","Every Friday evening.","Every Saturday afternoon."],0,"英文の内容を聞き取り、質問に合う答えを選びます。"],["第3部","Anna bought a train ticket online because she wanted to avoid waiting at the station. Why did Anna buy the ticket online?",["To avoid waiting at the station.","To save money on lunch.","To meet her friend.","To change her train."],0,"英文の内容を聞き取り、質問に合う答えを選びます。"],["第3部","A new café opened near the school. Students like it because it has comfortable seats and free Wi-Fi. Why do students like the café?",["It has comfortable seats and free Wi-Fi.","It sells school books.","It is open all night.","It has a large sports field."],0,"英文の内容を聞き取り、質問に合う答えを選びます。"],["第3部","Mr. Brown planted vegetables in his garden last spring. He grew tomatoes, carrots, and onions. What did he grow?",["Tomatoes, carrots, and onions.","Apples, oranges, and pears.","Potatoes, corn, and beans.","Lettuce, cabbage, and peas."],0,"英文の内容を聞き取り、質問に合う答えを選びます。"]];
+let lSession=[],li=0,ls=0;
+function startListeningQuiz(){
+  const p1=shuffle(pre2ListeningPool.filter(x=>x[0]==="第1部")).slice(0,10);
+  const p2=shuffle(pre2ListeningPool.filter(x=>x[0]==="第2部")).slice(0,10);
+  const p3=shuffle(pre2ListeningPool.filter(x=>x[0]==="第3部")).slice(0,10);
+  lSession=[...p1,...p2,...p3]; li=0;ls=0;
+  openSec("lquiz");showLQ();
+}
+function showLQ(){
+ const x=lSession[li];
+ document.getElementById("lTitle").textContent=`${li+1} / ${lSession.length}`;
+ document.getElementById("lScore").textContent=`正解 ${ls}`;
+ document.getElementById("lBar").style.width=`${li/lSession.length*100}%`;
+ document.getElementById("lPart").textContent=x[0];
+ document.getElementById("lQ").textContent="🎧 音声を聞いてください";
+ document.getElementById("lQ").className="question listenHiddenQuestion";
+ document.getElementById("lOpts").innerHTML="";
+ document.getElementById("lEx").className="ex";
+ document.getElementById("lEx").textContent="";
+ document.getElementById("lNext").style.display="none";
+ document.getElementById("lResult").style.display="none";
+ document.getElementById("lAudioPanel").innerHTML=`
+ <div class="listenAudioCard">
+  <div class="listenAudioIcon">🎧</div>
+  <div class="listenAudioTitle">音声を聞いてください</div>
+  <div class="listenAudioSub">音声を聞き終わるまで、問題と選択肢は表示されません。</div>
+  <button class="listenPlayBtn" onclick="speakLQAndReveal()">▶ 音声を再生</button>
+  <button class="listenReplayBtn" onclick="speakLQ()" style="display:none">🔁 もう一度聞く</button>
+  <div id="lAudioStatus" class="listenStatus">再生前</div>
+ </div>`;
+}
+function speakLQ(){
+ const x=lSession[li]; speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(x[1]);u.lang="en-US";u.rate=.82;
+ speechSynthesis.speak(u);
+}
+function speakLQAndReveal(){
+ const x=lSession[li]; const st=document.getElementById("lAudioStatus");if(st)st.textContent="再生中…";
+ speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(x[1]);u.lang="en-US";u.rate=.82;
+ u.onend=()=>revealLQ();speechSynthesis.speak(u);
+}
+function revealLQ(){
+ const x=lSession[li];
+ document.getElementById("lQ").textContent=x[1];
+ document.getElementById("lQ").className="question";
+ const o=document.getElementById("lOpts");o.innerHTML="";
+ x[2].forEach((v,i)=>{const b=document.createElement("button");b.className="option";b.textContent=`${i+1}　${v}`;b.onclick=()=>answerLQ(i,b);o.appendChild(b)});
+ const panel=document.getElementById("lAudioPanel");
+ panel.querySelector(".listenPlayBtn").style.display="none";
+ panel.querySelector(".listenReplayBtn").style.display="inline-block";
+ document.getElementById("lAudioStatus").textContent="音声再生済み";
+}
+function answerLQ(i,b){
+ const x=lSession[li];
+ document.querySelectorAll("#lOpts .option").forEach((q,n)=>{q.disabled=true;if(n===x[3])q.classList.add("correct")});
+ const ok=i===x[3]; if(ok){ls++;b.classList.add("correct")}else{b.classList.add("wrong");saveWrong("listening",{id:"p2-"+li+"-"+x[1],question:x[1],options:x[2],correctIndex:x[3],explanation:x[4]},i)}
+ document.getElementById("lScore").textContent=`正解 ${ls}`;
+ document.getElementById("lEx").textContent=(ok?"正解！ ":"不正解。 ")+x[4];
+ document.getElementById("lEx").className="ex show";
+ document.getElementById("lNext").style.display="block";
+ document.getElementById("lNext").textContent=li===lSession.length-1?"結果を見る":"次の問題";
+}
+function nextLQ(){
+ if(li<lSession.length-1){li++;showLQ()}
+ else{
+  document.getElementById("lQ").textContent=`終了：${ls} / ${lSession.length} 問正解`;
+  document.getElementById("lOpts").innerHTML="";
+  document.getElementById("lNext").style.display="none";
+  document.getElementById("lResult").style.display="block";
+  document.getElementById("lFinal").textContent=`${ls} / ${lSession.length} 問 正解`;
+  document.getElementById("lMsg").textContent="今回の結果を確認しました。";
+ }
+}
 let g5ListeningSession=[];
 let g5ListeningPos=0;
 
