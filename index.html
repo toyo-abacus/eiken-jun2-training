@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#173b73">
-<title>英検準2級 実戦トレーニング</title>
+<title>英検トレーニング</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f3f6fa;color:#172033;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Hiragino Kaku Gothic ProN",sans-serif}
@@ -34,16 +34,27 @@ main{max-width:900px;margin:auto;padding:16px 13px 50px}
 textarea{width:100%;min-height:150px;border:2px solid #dce2eb;border-radius:12px;padding:12px;font:inherit}
 .pillrow{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}.pill{background:#eef2f7;border-radius:99px;padding:6px 10px;font-size:12px}
 .analysis{border-left:4px solid #2d70d6;padding-left:12px;margin:12px 0;line-height:1.7}
-.timer{font-size:28px;font-weight:800;text-align:center;margin:5px}.sortWord{border:0;background:#eef2f7;border-radius:99px;padding:8px 12px;cursor:pointer;font-weight:700}.sortWord.selected{opacity:.45}.sortPicked{background:#eaf1ff;color:#245ca9;border-radius:99px;padding:7px 10px;margin:3px;cursor:pointer}.reviewItem{border:1px solid #dfe5ee;border-radius:13px;padding:13px;margin:10px 0;background:#fbfcfe}.reviewItem h3{font-size:15px;line-height:1.5;margin:0 0 8px}.answerBox{background:#eaf8f0;border-radius:9px;padding:9px;margin-top:8px;font-size:13px}.wrongTag{display:inline-block;background:#fff0f1;color:#b42332;border-radius:99px;padding:4px 8px;font-size:11px;font-weight:700;margin-bottom:6px}
+.timer{font-size:28px;font-weight:800;text-align:center;margin:5px}.audioBox{background:#f6f8fb;border:1px solid #e1e6ee;border-radius:14px;padding:12px;margin:12px 0}.audioBox h3{margin:0 0 6px}.audioBox audio{margin-top:5px}.grade5Only{display:none}.gradeGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.gradeBtn{border:1px solid #dbe2ec;border-radius:16px;background:#fff;padding:18px 10px;text-align:left;cursor:pointer}.gradeBtn b{display:block;font-size:22px}.gradeBtn span{font-size:12px;color:#687386}.gradeBtn.g5{background:#f7fbff}.currentGrade{margin-top:10px;text-align:center;font-weight:700;font-size:13px;color:#245ca9}.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}.statgrid div{background:#f5f7fa;border-radius:12px;padding:10px;text-align:center}.statgrid b{display:block;font-size:20px}.statgrid span{font-size:11px;color:#687386}.note{background:#f8f5ea;border-radius:10px;padding:10px;margin-top:10px;font-size:12px;color:#5b5542}.sortWord{border:0;background:#eef2f7;border-radius:99px;padding:8px 12px;cursor:pointer;font-weight:700}.sortWord.selected{opacity:.45}.sortPicked{background:#eaf1ff;color:#245ca9;border-radius:99px;padding:7px 10px;margin:3px;cursor:pointer}.reviewItem{border:1px solid #dfe5ee;border-radius:13px;padding:13px;margin:10px 0;background:#fbfcfe}.reviewItem h3{font-size:15px;line-height:1.5;margin:0 0 8px}.answerBox{background:#eaf8f0;border-radius:9px;padding:9px;margin-top:8px;font-size:13px}.wrongTag{display:inline-block;background:#fff0f1;color:#b42332;border-radius:99px;padding:4px 8px;font-size:11px;font-weight:700;margin-bottom:6px}
 hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 @media(max-width:600px){.grid{grid-template-columns:1fr}.menu{min-height:96px}h1{font-size:21px}.question{font-size:18px}}
 </style>
 </head>
 <body>
-<header><div class="header"><h1>英検準2級 実戦トレーニング</h1><div class="sub">過去問3回分の出題形式・傾向を参考にしたオリジナル練習</div></div></header>
+<header><div class="header"><h1>英検トレーニング</h1><div class="sub">過去問3回分の出題形式・傾向を参考にしたオリジナル練習</div></div></header>
 <main>
 
 <section id="home" class="section active">
+<div class="card gradeSelectCard">
+<span class="badge">級を選択</span>
+<h2>英検トレーニング</h2>
+<p class="muted">練習したい級を選んでください。</p>
+<div class="gradeGrid">
+<button class="gradeBtn g5" onclick="selectGrade('5')"><b>5級</b><span>小学生向け</span></button>
+<button class="gradeBtn" onclick="selectGrade('pre2')"><b>準2級</b><span>実戦トレーニング</span></button>
+</div>
+<div id="currentGrade" class="currentGrade">現在：準2級</div>
+</div>
+
 <div class="card">
 <span class="badge">過去問分析反映版</span>
 <h2>英検準2級を本番形式で練習</h2>
@@ -51,13 +62,14 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 </div>
 <div class="grid">
 <button class="card menu" onclick="startReading()"><div class="ico">📝</div><b>リーディング実戦</b><span>語彙・会話・文法・長文など約80問からランダム出題</span></button>
-<button class="card menu" onclick="openSec('writing')"><div class="ico">✏️</div><b>ライティング</b><span>Eメール＋意見英作文を本番型で練習</span></button>
-<button class="card menu" onclick="openSec('listening')"><div class="ico">🎧</div><b>リスニング</b><span>第1部・第2部・第3部の形式で練習</span></button>
+<button class="card menu pre2Only" onclick="openSec('writing')"><div class="ico">✏️</div><b>ライティング</b><span>Eメール＋意見英作文を本番型で練習</span></button>
+<button class="card menu pre2Only" onclick="openSec('listening')"><div class="ico">🎧</div><b>リスニング</b><span>第1部・第2部・第3部の形式で練習</span></button>
+<button class="card menu pre2Only" onclick="openSec('pre2actualAudio')"><div class="ico">🎵</div><b>実際のリスニング音声</b><span>提供された準2級の実際の音声を再生</span></button>
 <button class="card menu" onclick="startListeningQuiz()"><div class="ico">🔊</div><b>リスニング30問</b><span>過去問の3部構成を参考にした追加問題</span></button>
-<button class="card menu" onclick="openSec('analysis')"><div class="ico">📊</div><b>過去問分析</b><span>3回分から確認できた出題構成</span></button>
-<button class="card menu" onclick="openSec('record')"><div class="ico">📈</div><b>学習記録</b><span>この端末に保存した成績</span></button>
-<button class="card menu" onclick="openSec('review')"><div class="ico">🔁</div><b>間違えた問題・復習</b><span>間違えた問題を後から確認・再挑戦</span></button>
-<button class="card menu" onclick="openSec('guide')"><div class="ico">ℹ️</div><b>使い方</b><span>サイトの学習方法と注意点</span></button>
+<button class="card menu pre2Only" onclick="openSec('analysis')"><div class="ico">📊</div><b>過去問分析</b><span>3回分から確認できた出題構成</span></button>
+<button class="card menu pre2Only" onclick="openSec('record')"><div class="ico">📈</div><b>学習記録</b><span>この端末に保存した成績</span></button>
+<button class="card menu pre2Only" onclick="openSec('review')"><div class="ico">🔁</div><b>間違えた問題・復習</b><span>間違えた問題を後から確認・再挑戦</span></button>
+<button class="card menu pre2Only" onclick="openSec('guide')"><div class="ico">ℹ️</div><b>使い方</b><span>サイトの学習方法と注意点</span></button>
 </div>
 </section>
 
@@ -144,6 +156,36 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 <textarea id="emailText" placeholder="Hi, Alex!&#10;&#10;Thank you for your e-mail.&#10;..."></textarea>
 <div id="emailWords" class="muted">0 words</div>
 <button class="btn" onclick="countWords('emailText','emailWords')">語数を数える</button>
+</div>
+</section>
+
+
+<section id="pre2actualAudio" class="section">
+<button class="back" onclick="openSec('home')">← 準2級メニュー</button>
+<div class="card">
+<span class="badge">実際のリスニング音声</span>
+<h2>英検準2級・提供音声</h2>
+<p class="muted">以前提供された準2級のリスニング音声を、このサイト内から直接再生できます。</p>
+
+<div class="audioBox">
+<h3>第1部</h3>
+<p class="muted">リスニング 第1部</p>
+<audio controls preload="metadata" style="width:100%" src="audio/P2Q-part1.mp3"></audio>
+</div>
+
+<div class="audioBox">
+<h3>第2部</h3>
+<p class="muted">リスニング 第2部</p>
+<audio controls preload="metadata" style="width:100%" src="audio/P2Q-part2.mp3"></audio>
+</div>
+
+<div class="audioBox">
+<h3>第3部</h3>
+<p class="muted">リスニング 第3部</p>
+<audio controls preload="metadata" style="width:100%" src="audio/P2Q-part3.mp3"></audio>
+</div>
+
+<div class="note">実際の音声をサイトから再生するため、GitHub Pagesへアップロードするときは index.html と audio フォルダをセットでアップロードしてください。</div>
 </div>
 </section>
 
@@ -244,6 +286,84 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 <p class="muted">今回正解できた問題は、間違い一覧から自動的に外れます。</p>
 <button class="btn" onclick="openSec('review')">復習一覧を見る</button>
 </div>
+</div>
+</section>
+
+
+<section id="g5menu" class="section">
+<button class="back" onclick="openSec('home')">← 級選択</button>
+<div class="card">
+<span class="badge">英検5級</span>
+<h2>5級トレーニング</h2>
+<p class="muted">2026年度第1回の5級問題冊子を確認し、形式を合わせたオリジナル練習です。</p>
+<div class="statgrid">
+<div><b>25問</b><span>リーディング</span></div>
+<div><b>25問</b><span>リスニング</span></div>
+<div><b>150問</b><span>問題プール</span></div>
+</div>
+<button class="btn" onclick="startG5Reading()">リーディングを練習</button>
+<button class="btn" onclick="startG5Listening()">リスニングを練習</button>
+<button class="btn" onclick="openSec('g5actualAudio')" style="background:#315a9b">🎧 2026年度第1回・実際の5級音声を聞く</button>
+<div class="note">5級には準2級のようなライティング問題はありません。別枠でスピーキング練習を追加できます。</div>
+</div>
+</section>
+
+
+<section id="g5actualAudio" class="section">
+<button class="back" onclick="openSec('g5menu')">← 5級メニュー</button>
+<div class="card">
+<span class="badge">実際のリスニング音声</span>
+<h2>2026年度第1回 5級</h2>
+<p class="muted">今回アップロードされた実際の試験音声を、そのまま再生できます。5級リスニングは第1部～第3部で構成され、英文は2度放送されます。</p>
+
+<div class="audioBox">
+<h3>第1部</h3>
+<p class="muted">イラストを参考に、英文と応答を聞く問題</p>
+<audio controls preload="metadata" style="width:100%" src="audio/5Q-part1.mp3"></audio>
+</div>
+
+<div class="audioBox">
+<h3>第2部</h3>
+<p class="muted">対話と質問を聞く問題</p>
+<audio controls preload="metadata" style="width:100%" src="audio/5Q-part2.mp3"></audio>
+</div>
+
+<div class="audioBox">
+<h3>第3部</h3>
+<p class="muted">3つの英文を聞き、絵の内容を選ぶ問題</p>
+<audio controls preload="metadata" style="width:100%" src="audio/5Q-part3.mp3"></audio>
+</div>
+
+<div class="note">「実際の試験音声」は提供された過去問音源を再生するコーナーです。「リスニング練習」は別のオリジナル問題をランダム出題します。音声ファイルはこのサイト内に同梱しています。GitHub Pagesへアップロードした場合も、audioフォルダを一緒にアップロードしてください。</div>
+</div>
+</section>
+
+<section id="g5reading" class="section">
+<button class="back" onclick="openSec('g5menu')">← 5級メニュー</button>
+<div class="card">
+<span class="badge">5級・リーディング</span>
+<div class="meta"><span id="g5rTitle">1 / 25</span><span id="g5rScore">正解 0</span></div>
+<div class="progress"><div id="g5rBar" class="bar"></div></div>
+<div id="g5rQuestion" class="question"></div>
+<div id="g5rOptions" class="options"></div>
+<div id="g5rEx" class="ex"></div>
+<button id="g5rNext" class="btn next" style="display:none" onclick="nextG5Reading()">次の問題</button>
+</div>
+</section>
+
+<section id="g5listening" class="section">
+<button class="back" onclick="openSec('g5menu')">← 5級メニュー</button>
+<div class="card">
+<span class="badge">5級・リスニング</span>
+<p class="muted">過去問の第1部・第2部・第3部の形式を分析したオリジナル問題を大量に収録。第1部10問・第2部5問・第3部10問を各問題プールからランダムに出題します。</p>
+<div class="meta"><span id="g5lTitle">1 / 25</span><span id="g5lScore">正解 0</span></div>
+<div class="progress"><div id="g5lBar" class="bar"></div></div>
+<div id="g5lPart" class="badge"></div>
+<button class="btn" onclick="speakG5()">🔊 英文を聞く</button>
+<div id="g5lQuestion" class="question"></div>
+<div id="g5lOptions" class="options"></div>
+<div id="g5lEx" class="ex"></div>
+<button id="g5lNext" class="btn next" style="display:none" onclick="nextG5Listening()">次の問題</button>
 </div>
 </section>
 
@@ -384,6 +504,129 @@ function checkEssay(){
 }
 initSort();
 
+
+let currentGrade="pre2";
+function selectGrade(g){
+ currentGrade=g;
+ document.getElementById("currentGrade").textContent="現在："+(g==="5"?"5級":"準2級");
+ document.querySelectorAll(".grade5Only").forEach(x=>x.style.display=g==="5"?"block":"none");
+ if(g==="5") openSec("g5menu"); else openSec("home");
+}
+const g5Reading=[
+["I play soccer after school. I need my ( ).",["book","ball","desk","chair"],1,"soccerにはball（ボール）が必要です。"],
+["My mother gets up at seven. She ( ) breakfast for us.",["makes","plays","opens","sees"],0,"朝食を作るのでmakesが自然です。"],
+["A: Where is your bag? B: It is ( ) the chair.",["under","happy","fast","young"],0,"場所を表すunderが適切です。"],
+["Tom likes animals. He has a ( ) at home.",["dog","train","desk","shoe"],0,"家で飼う動物としてdogが適切です。"],
+["Please ( ) the door. It is cold outside.",["close","swim","sing","run"],0,"ドアを閉めるのでcloseです。"],
+["I go to school ( ) bus.",["by","on","at","to"],0,"by busで「バスで」です。"],
+["A: Can you swim? B: Yes, I ( ).",["am","do","can","have"],2,"Can you～?にはYes, I can.と答えます。"],
+["We have English ( ) Monday.",["in","on","at","from"],1,"曜日にはonを使います。"],
+["This is my sister. ( ) name is Emma.",["Her","She","Hers","Him"],0,"女性の所有を表すHerです。"],
+["Ken is hungry. He wants some ( ).",["water","breakfast","blue","school"],1,"hungryなので食べ物のbreakfastが自然です。"],
+["A: What time is it? B: It is ( ).",["Monday","seven","Japan","summer"],1,"時刻にはsevenなどの時刻表現を使います。"],
+["My father ( ) tennis every Sunday.",["play","plays","playing","played"],1,"主語が三人称単数なのでplaysです。"],
+["I have two ( ).",["brother","brothers","brotheres","brother's"],1,"twoの後なので複数形brothersです。"],
+["A: Thank you. B: ( ).",["You're welcome.","I'm sorry.","Good night.","Excuse me."],0,"Thank youへの自然な応答はYou're welcome.です。"],
+["The library is ( ) the school and the park.",["between","under","happy","slow"],0,"between A and Bで「AとBの間」です。"],
+["A: Do you like music? B: ( ).",["Yes, I do.","Yes, I am.","Yes, it is.","Yes, I can."],0,"Do you～?にはYes, I do.です。"],
+["A: What do you want? B: I want a ( ).",["red","pencil","run","tall"],1,"want aの後には名詞が自然です。"],
+["It is raining, so I have my ( ).",["umbrella","piano","sandwich","bike"],0,"雨なのでumbrellaを持ちます。"],
+["Mary is in the kitchen. She is ( ) dinner.",["make","makes","making","made"],2,"is＋動詞ingで進行形です。"],
+["A: Who is that? B: He is my ( ).",["brother","blue","run","seven"],0,"Who is～?には人を表す名詞で答えます。"],
+["I read books ( ) night.",["at","on","in","to"],0,"at nightという表現です。"],
+["A: Let's play tennis. B: ( ).",["Good idea.","I am ten.","It is red.","No, it is."],0,"Let's～への賛成表現はGood idea.です。"],
+["My birthday is ( ) May.",["on","at","in","by"],2,"月にはinを使います。"],
+["The cat is ( ) the box.",["in","happy","quickly","three"],0,"箱の中を表すinです。"],
+["A: How old are you? B: I am ( ) years old.",["ten","tenly","tenth","tens"],0,"年齢には基数tenを使います。"]
+];
+
+const g5Listening=[["第1部","What is this?",["This is a hat.","This is a pencil.","This is a book."],2,"質問に合う応答を選びます。"],["第1部","What is this?",["This is a pencil.","This is a bag.","This is a book."],0,"質問に合う応答を選びます。"],["第1部","What is this?",["This is a ball.","This is a ruler.","This is a hat."],1,"質問に合う応答を選びます。"],["第1部","What is this?",["This is a ball.","This is a bag.","This is a umbrella."],1,"質問に合う応答を選びます。"],["第1部","What is this?",["This is a camera.","This is a bag.","This is a hat."],2,"質問に合う応答を選びます。"],["第1部","What is this?",["This is a hat.","This is a umbrella.","This is a camera."],1,"質問に合う応答を選びます。"],["第1部","What is this?",["This is a camera.","This is a book.","This is a ball."],2,"質問に合う応答を選びます。"],["第1部","What is this?",["This is a camera.","This is a bag.","This is a ball."],0,"質問に合う応答を選びます。"],["第1部","What is this?",["This is a bag.","This is a notebook.","This is a ruler."],1,"質問に合う応答を選びます。"],["第1部","What is this?",["This is a guitar.","This is a book.","This is a ruler."],0,"質問に合う応答を選びます。"],["第1部","What color is it?",["It is black.","It is white.","It is red."],2,"質問に合う応答を選びます。"],["第1部","What color is it?",["It is red.","It is blue.","It is green."],1,"質問に合う応答を選びます。"],["第1部","What color is it?",["It is green.","It is black.","It is red."],0,"質問に合う応答を選びます。"],["第1部","What color is it?",["It is blue.","It is yellow.","It is green."],1,"質問に合う応答を選びます。"],["第1部","What color is it?",["It is black.","It is blue.","It is red."],0,"質問に合う応答を選びます。"],["第1部","What color is it?",["It is black.","It is red.","It is white."],2,"質問に合う応答を選びます。"],["第1部","Where is the the library?",["It is in the bus stop.","It is in the station.","It is in the library."],2,"質問に合う応答を選びます。"],["第1部","Where is the the classroom?",["It is in the classroom.","It is in the store.","It is in the station."],0,"質問に合う応答を選びます。"],["第1部","Where is the the station?",["It is in the playground.","It is in the store.","It is in the station."],2,"質問に合う応答を選びます。"],["第1部","Where is the the kitchen?",["It is in the classroom.","It is in the station.","It is in the kitchen."],2,"質問に合う応答を選びます。"],["第1部","Where is the the store?",["It is in the store.","It is in the gym.","It is in the library."],0,"質問に合う応答を選びます。"],["第1部","Where is the the gym?",["It is in the gym.","It is in the classroom.","It is in the kitchen."],0,"質問に合う応答を選びます。"],["第1部","Where is the the playground?",["It is in the library.","It is in the playground.","It is in the station."],1,"質問に合う応答を選びます。"],["第1部","Where is the the classroom?",["It is in the classroom.","It is in the bus stop.","It is in the gym."],0,"質問に合う応答を選びます。"],["第1部","Where is the the bus stop?",["It is in the bus stop.","It is in the playground.","It is in the classroom."],0,"質問に合う応答を選びます。"],["第1部","What is the boy doing?",["He is drinking juice.","He is drawing a picture.","He is reading a book."],2,"質問に合う応答を選びます。"],["第1部","What is the boy doing?",["He is reading a book.","He is playing soccer.","He is drawing a picture."],1,"質問に合う応答を選びます。"],["第1部","What is the boy doing?",["He is eating lunch.","He is drinking juice.","He is drawing a picture."],0,"質問に合う応答を選びます。"],["第1部","What is the boy doing?",["He is washing a car.","He is studying English.","He is playing soccer."],1,"質問に合う応答を選びます。"],["第1部","What is the boy doing?",["He is playing soccer.","He is reading a book.","He is riding a bicycle."],2,"質問に合う応答を選びます。"],["第1部","What is the boy doing?",["He is riding a bicycle.","He is drawing a picture.","He is studying English."],1,"質問に合う応答を選びます。"],["第1部","What is the boy doing?",["He is washing a car.","He is riding a bicycle.","He is playing the piano."],0,"質問に合う応答を選びます。"],["第1部","What is the boy doing?",["He is eating lunch.","He is playing the piano.","He is reading a book."],1,"質問に合う応答を選びます。"],["第1部","What is the boy doing?",["He is reading a book.","He is washing a car.","He is walking a dog."],2,"質問に合う応答を選びます。"],["第1部","What is the boy doing?",["He is drinking juice.","He is studying English.","He is playing the piano."],0,"質問に合う応答を選びます。"],["第1部","What is the girl doing?",["She is playing the piano.","She is drawing a picture.","She is reading a book."],2,"質問に合う応答を選びます。"],["第1部","What is the girl doing?",["She is playing soccer.","She is washing a car.","She is playing the piano."],0,"質問に合う応答を選びます。"],["第1部","What is the girl doing?",["She is drinking juice.","She is eating lunch.","She is playing soccer."],1,"質問に合う応答を選びます。"],["第1部","What is the girl doing?",["She is playing the piano.","She is studying English.","She is drinking juice."],1,"質問に合う応答を選びます。"],["第1部","What is the girl doing?",["She is washing a car.","She is riding a bicycle.","She is drawing a picture."],1,"質問に合う応答を選びます。"],["第1部","What is the girl doing?",["She is walking a dog.","She is drawing a picture.","She is playing the piano."],1,"質問に合う応答を選びます。"],["第1部","What is the girl doing?",["She is studying English.","She is washing a car.","She is walking a dog."],1,"質問に合う応答を選びます。"],["第1部","What is the girl doing?",["She is drinking juice.","She is reading a book.","She is playing the piano."],2,"質問に合う応答を選びます。"],["第1部","What is the girl doing?",["She is reading a book.","She is walking a dog.","She is playing soccer."],1,"質問に合う応答を選びます。"],["第1部","What is the girl doing?",["She is drinking juice.","She is playing the piano.","She is eating lunch."],0,"質問に合う応答を選びます。"],["第1部","What does Ken have?",["He has a umbrella.","He has a bag.","He has a book."],2,"質問に合う応答を選びます。"],["第1部","What does Ken have?",["He has a bag.","He has a book.","He has a pencil."],2,"質問に合う応答を選びます。"],["第1部","What does Ken have?",["He has a ruler.","He has a ball.","He has a camera."],0,"質問に合う応答を選びます。"],["第1部","What does Ken have?",["He has a bag.","He has a notebook.","He has a ball."],0,"質問に合う応答を選びます。"],["第1部","What does Ken have?",["He has a book.","He has a hat.","He has a guitar."],1,"質問に合う応答を選びます。"],["第1部","What does Ken have?",["He has a hat.","He has a umbrella.","He has a camera."],1,"質問に合う応答を選びます。"],["第1部","What does Ken have?",["He has a camera.","He has a pencil.","He has a ball."],2,"質問に合う応答を選びます。"],["第1部","What does Ken have?",["He has a camera.","He has a bag.","He has a ruler."],0,"質問に合う応答を選びます。"],["第1部","What does Ken have?",["He has a pencil.","He has a notebook.","He has a camera."],1,"質問に合う応答を選びます。"],["第1部","What does Ken have?",["He has a notebook.","He has a ruler.","He has a guitar."],2,"質問に合う応答を選びます。"],["第2部","Ken: What time do you get up?  Ken: I get up at six.  What time does Ken get up?",["nine","six","seven","ten"],1,"対話の中から質問の答えを聞き取ります。"],["第2部","Yuki: When do you play tennis?  Yuki: I play tennis on Tuesday.  When does Yuki play tennis?",["Sunday","Wednesday","Thursday","Tuesday"],3,"対話の中から質問の答えを聞き取ります。"],["第2部","Emma: What do you want for lunch?  Emma: I want a banana.  What does Emma want?",["an orange","a sandwich","some soup","a banana"],3,"対話の中から質問の答えを聞き取ります。"],["第2部","Teacher: What do you have?  Tom: I have a bag.  What does Tom have?",["hat","book","ruler","bag"],3,"対話の中から質問の答えを聞き取ります。"],["第2部","Anna: Who is that?  Friend: He is my grandmother.  Who is he?",["grandmother","mother","brother","grandfather"],0,"対話の中から質問の答えを聞き取ります。"],["第2部","Mike: What time do you get up?  Mike: I get up at six.  What time does Mike get up?",["nine","seven","ten","six"],3,"対話の中から質問の答えを聞き取ります。"],["第2部","Lisa: When do you play tennis?  Lisa: I play tennis on Sunday.  When does Lisa play tennis?",["Sunday","Monday","Thursday","Friday"],0,"対話の中から質問の答えを聞き取ります。"],["第2部","John: What do you want for lunch?  John: I want an orange.  What does John want?",["some soup","an orange","an apple","a banana"],1,"対話の中から質問の答えを聞き取ります。"],["第2部","Teacher: What do you have?  Amy: I have a notebook.  What does Amy have?",["notebook","bag","camera","pencil"],0,"対話の中から質問の答えを聞き取ります。"],["第2部","Sam: Who is that?  Friend: He is my father.  Who is he?",["grandmother","grandfather","father","sister"],2,"対話の中から質問の答えを聞き取ります。"],["第2部","Ken: What time do you get up?  Ken: I get up at six.  What time does Ken get up?",["ten","nine","eight","six"],3,"対話の中から質問の答えを聞き取ります。"],["第2部","Yuki: When do you play tennis?  Yuki: I play tennis on Friday.  When does Yuki play tennis?",["Tuesday","Sunday","Wednesday","Friday"],3,"対話の中から質問の答えを聞き取ります。"],["第2部","Emma: What do you want for lunch?  Emma: I want some rice.  What does Emma want?",["a banana","some rice","an apple","some cake"],1,"対話の中から質問の答えを聞き取ります。"],["第2部","Teacher: What do you have?  Tom: I have a bag.  What does Tom have?",["pencil","bag","ball","book"],1,"対話の中から質問の答えを聞き取ります。"],["第2部","Anna: Who is that?  Friend: He is my mother.  Who is he?",["grandfather","grandmother","mother","sister"],2,"対話の中から質問の答えを聞き取ります。"],["第2部","Mike: What time do you get up?  Mike: I get up at six.  What time does Mike get up?",["seven","ten","eight","six"],3,"対話の中から質問の答えを聞き取ります。"],["第2部","Lisa: When do you play tennis?  Lisa: I play tennis on Wednesday.  When does Lisa play tennis?",["Thursday","Sunday","Friday","Wednesday"],3,"対話の中から質問の答えを聞き取ります。"],["第2部","John: What do you want for lunch?  John: I want a sandwich.  What does John want?",["a sandwich","a banana","a hamburger","an apple"],0,"対話の中から質問の答えを聞き取ります。"],["第2部","Teacher: What do you have?  Amy: I have a notebook.  What does Amy have?",["pencil","ball","notebook","hat"],2,"対話の中から質問の答えを聞き取ります。"],["第2部","Sam: Who is that?  Friend: He is my sister.  Who is he?",["sister","brother","grandfather","mother"],0,"対話の中から質問の答えを聞き取ります。"],["第2部","Ken: What time do you get up?  Ken: I get up at six.  What time does Ken get up?",["six","eight","seven","nine"],0,"対話の中から質問の答えを聞き取ります。"],["第2部","Yuki: When do you play tennis?  Yuki: I play tennis on Monday.  When does Yuki play tennis?",["Monday","Tuesday","Wednesday","Friday"],0,"対話の中から質問の答えを聞き取ります。"],["第2部","Emma: What do you want for lunch?  Emma: I want some soup.  What does Emma want?",["a sandwich","an apple","some soup","some cake"],2,"対話の中から質問の答えを聞き取ります。"],["第2部","Teacher: What do you have?  Tom: I have a bag.  What does Tom have?",["bag","camera","notebook","ball"],0,"対話の中から質問の答えを聞き取ります。"],["第2部","Anna: Who is that?  Friend: He is my brother.  Who is he?",["grandfather","mother","grandmother","brother"],3,"対話の中から質問の答えを聞き取ります。"],["第2部","Mike: What time do you get up?  Mike: I get up at six.  What time does Mike get up?",["nine","six","eight","ten"],1,"対話の中から質問の答えを聞き取ります。"],["第2部","Lisa: When do you play tennis?  Lisa: I play tennis on Saturday.  When does Lisa play tennis?",["Saturday","Tuesday","Thursday","Friday"],0,"対話の中から質問の答えを聞き取ります。"],["第2部","John: What do you want for lunch?  John: I want some cake.  What does John want?",["a banana","some rice","a sandwich","some cake"],3,"対話の中から質問の答えを聞き取ります。"],["第2部","Teacher: What do you have?  Amy: I have a notebook.  What does Amy have?",["notebook","camera","hat","book"],0,"対話の中から質問の答えを聞き取ります。"],["第2部","Sam: Who is that?  Friend: He is my grandfather.  Who is he?",["sister","grandfather","father","mother"],1,"対話の中から質問の答えを聞き取ります。"],["第3部","Listen to three sentences. Which picture is described? Ken is reading a book at the park.",["Ken is eating lunch at the library.","Ken is reading a book at the park.","Tom is riding a bicycle at the classroom."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Yuki is playing soccer at the station.",["Anna is drawing a picture at the station.","Yuki is studying English at the classroom.","Yuki is playing soccer at the station."],2,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Emma is eating lunch at the gym.",["Emma is riding a bicycle at the station.","Mike is washing a car at the kitchen.","Emma is eating lunch at the gym."],2,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Tom is studying English at the bus stop.",["Tom is drawing a picture at the kitchen.","Tom is studying English at the bus stop.","Lisa is playing the piano at the store."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Anna is riding a bicycle at the classroom.",["John is walking a dog at the gym.","Anna is riding a bicycle at the classroom.","Anna is washing a car at the store."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Mike is drawing a picture at the store.",["Amy is drinking juice at the playground.","Mike is drawing a picture at the store.","Mike is playing the piano at the gym."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Lisa is washing a car at the classroom.",["Lisa is walking a dog at the playground.","Lisa is washing a car at the classroom.","Sam is reading a book at the classroom."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? John is playing the piano at the library.",["John is playing the piano at the library.","Ken is playing soccer at the bus stop.","John is drinking juice at the classroom."],0,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Amy is walking a dog at the kitchen.",["Yuki is eating lunch at the park.","Amy is walking a dog at the kitchen.","Amy is reading a book at the bus stop."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Sam is drinking juice at the playground.",["Sam is playing soccer at the park.","Sam is drinking juice at the playground.","Emma is studying English at the library."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Ken is reading a book at the park.",["Ken is eating lunch at the library.","Ken is reading a book at the park.","Tom is riding a bicycle at the classroom."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Yuki is playing soccer at the station.",["Yuki is studying English at the classroom.","Yuki is playing soccer at the station.","Anna is drawing a picture at the station."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Emma is eating lunch at the gym.",["Emma is riding a bicycle at the station.","Emma is eating lunch at the gym.","Mike is washing a car at the kitchen."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Tom is studying English at the bus stop.",["Tom is studying English at the bus stop.","Tom is drawing a picture at the kitchen.","Lisa is playing the piano at the store."],0,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Anna is riding a bicycle at the classroom.",["Anna is washing a car at the store.","Anna is riding a bicycle at the classroom.","John is walking a dog at the gym."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Mike is drawing a picture at the store.",["Mike is drawing a picture at the store.","Amy is drinking juice at the playground.","Mike is playing the piano at the gym."],0,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Lisa is washing a car at the classroom.",["Lisa is washing a car at the classroom.","Lisa is walking a dog at the playground.","Sam is reading a book at the classroom."],0,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? John is playing the piano at the library.",["John is playing the piano at the library.","John is drinking juice at the classroom.","Ken is playing soccer at the bus stop."],0,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Amy is walking a dog at the kitchen.",["Amy is walking a dog at the kitchen.","Yuki is eating lunch at the park.","Amy is reading a book at the bus stop."],0,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Sam is drinking juice at the playground.",["Emma is studying English at the library.","Sam is playing soccer at the park.","Sam is drinking juice at the playground."],2,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Ken is reading a book at the park.",["Ken is reading a book at the park.","Ken is eating lunch at the library.","Tom is riding a bicycle at the classroom."],0,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Yuki is playing soccer at the station.",["Anna is drawing a picture at the station.","Yuki is playing soccer at the station.","Yuki is studying English at the classroom."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Emma is eating lunch at the gym.",["Emma is eating lunch at the gym.","Mike is washing a car at the kitchen.","Emma is riding a bicycle at the station."],0,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Tom is studying English at the bus stop.",["Lisa is playing the piano at the store.","Tom is studying English at the bus stop.","Tom is drawing a picture at the kitchen."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Anna is riding a bicycle at the classroom.",["John is walking a dog at the gym.","Anna is washing a car at the store.","Anna is riding a bicycle at the classroom."],2,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Mike is drawing a picture at the store.",["Amy is drinking juice at the playground.","Mike is playing the piano at the gym.","Mike is drawing a picture at the store."],2,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Lisa is washing a car at the classroom.",["Lisa is washing a car at the classroom.","Sam is reading a book at the classroom.","Lisa is walking a dog at the playground."],0,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? John is playing the piano at the library.",["John is playing the piano at the library.","Ken is playing soccer at the bus stop.","John is drinking juice at the classroom."],0,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Amy is walking a dog at the kitchen.",["Amy is reading a book at the bus stop.","Yuki is eating lunch at the park.","Amy is walking a dog at the kitchen."],2,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Sam is drinking juice at the playground.",["Sam is playing soccer at the park.","Emma is studying English at the library.","Sam is drinking juice at the playground."],2,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Ken is reading a book at the park.",["Tom is riding a bicycle at the classroom.","Ken is reading a book at the park.","Ken is eating lunch at the library."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Yuki is playing soccer at the station.",["Yuki is studying English at the classroom.","Anna is drawing a picture at the station.","Yuki is playing soccer at the station."],2,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Emma is eating lunch at the gym.",["Emma is eating lunch at the gym.","Mike is washing a car at the kitchen.","Emma is riding a bicycle at the station."],0,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Tom is studying English at the bus stop.",["Tom is drawing a picture at the kitchen.","Lisa is playing the piano at the store.","Tom is studying English at the bus stop."],2,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Anna is riding a bicycle at the classroom.",["Anna is washing a car at the store.","John is walking a dog at the gym.","Anna is riding a bicycle at the classroom."],2,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Mike is drawing a picture at the store.",["Mike is playing the piano at the gym.","Mike is drawing a picture at the store.","Amy is drinking juice at the playground."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Lisa is washing a car at the classroom.",["Lisa is washing a car at the classroom.","Sam is reading a book at the classroom.","Lisa is walking a dog at the playground."],0,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? John is playing the piano at the library.",["John is playing the piano at the library.","John is drinking juice at the classroom.","Ken is playing soccer at the bus stop."],0,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Amy is walking a dog at the kitchen.",["Amy is walking a dog at the kitchen.","Amy is reading a book at the bus stop.","Yuki is eating lunch at the park."],0,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Sam is drinking juice at the playground.",["Emma is studying English at the library.","Sam is drinking juice at the playground.","Sam is playing soccer at the park."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Ken is reading a book at the park.",["Ken is eating lunch at the library.","Ken is reading a book at the park.","Tom is riding a bicycle at the classroom."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Yuki is playing soccer at the station.",["Yuki is playing soccer at the station.","Yuki is studying English at the classroom.","Anna is drawing a picture at the station."],0,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Emma is eating lunch at the gym.",["Emma is eating lunch at the gym.","Emma is riding a bicycle at the station.","Mike is washing a car at the kitchen."],0,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Tom is studying English at the bus stop.",["Lisa is playing the piano at the store.","Tom is drawing a picture at the kitchen.","Tom is studying English at the bus stop."],2,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Anna is riding a bicycle at the classroom.",["John is walking a dog at the gym.","Anna is washing a car at the store.","Anna is riding a bicycle at the classroom."],2,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Mike is drawing a picture at the store.",["Amy is drinking juice at the playground.","Mike is playing the piano at the gym.","Mike is drawing a picture at the store."],2,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Lisa is washing a car at the classroom.",["Lisa is walking a dog at the playground.","Lisa is washing a car at the classroom.","Sam is reading a book at the classroom."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? John is playing the piano at the library.",["John is drinking juice at the classroom.","John is playing the piano at the library.","Ken is playing soccer at the bus stop."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Amy is walking a dog at the kitchen.",["Amy is reading a book at the bus stop.","Amy is walking a dog at the kitchen.","Yuki is eating lunch at the park."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Sam is drinking juice at the playground.",["Emma is studying English at the library.","Sam is drinking juice at the playground.","Sam is playing soccer at the park."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Ken is reading a book at the park.",["Tom is riding a bicycle at the classroom.","Ken is reading a book at the park.","Ken is eating lunch at the library."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Yuki is playing soccer at the station.",["Yuki is playing soccer at the station.","Anna is drawing a picture at the station.","Yuki is studying English at the classroom."],0,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Emma is eating lunch at the gym.",["Mike is washing a car at the kitchen.","Emma is riding a bicycle at the station.","Emma is eating lunch at the gym."],2,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Tom is studying English at the bus stop.",["Tom is studying English at the bus stop.","Tom is drawing a picture at the kitchen.","Lisa is playing the piano at the store."],0,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Anna is riding a bicycle at the classroom.",["John is walking a dog at the gym.","Anna is washing a car at the store.","Anna is riding a bicycle at the classroom."],2,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Mike is drawing a picture at the store.",["Mike is drawing a picture at the store.","Mike is playing the piano at the gym.","Amy is drinking juice at the playground."],0,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Lisa is washing a car at the classroom.",["Lisa is walking a dog at the playground.","Sam is reading a book at the classroom.","Lisa is washing a car at the classroom."],2,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? John is playing the piano at the library.",["John is drinking juice at the classroom.","John is playing the piano at the library.","Ken is playing soccer at the bus stop."],1,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Amy is walking a dog at the kitchen.",["Amy is walking a dog at the kitchen.","Yuki is eating lunch at the park.","Amy is reading a book at the bus stop."],0,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第3部","Listen to three sentences. Which picture is described? Sam is drinking juice at the playground.",["Sam is drinking juice at the playground.","Sam is playing soccer at the park.","Emma is studying English at the library."],0,"3つの英文の内容と一致する絵を選ぶ形式です。"],["第1部","What do you see on the table?",["A pencil.","A dog.","A bicycle."],0,"質問に合う応答を選びます。"],["第1部","What does Anna want?",["A notebook.","A ball.","A hat."],0,"質問に合う応答を選びます。"],["第1部","Where is Mike?",["At the library.","At the park.","At the station."],0,"場所を表す応答を選びます。"],["第1部","What is Tom doing?",["He is drawing a picture.","He is swimming.","He is sleeping."],0,"人物の動作を聞き取ります。"],["第1部","What color is the bag?",["It is green.","It is seven.","It is in the park."],0,"色を表す応答を選びます。"]]
+
+let g5ri=0,g5rs=0,g5li=0,g5ls=0;
+function startG5Reading(){g5ri=0;g5rs=0;openSec("g5reading");showG5Reading()}
+function showG5Reading(){
+ const x=g5Reading[g5ri];
+ document.getElementById("g5rTitle").textContent=`${g5ri+1} / ${g5Reading.length}`;
+ document.getElementById("g5rScore").textContent=`正解 ${g5rs}`;
+ document.getElementById("g5rBar").style.width=`${g5ri/g5Reading.length*100}%`;
+ document.getElementById("g5rQuestion").textContent=x[0];
+ const o=document.getElementById("g5rOptions");o.innerHTML="";
+ x[1].forEach((v,i)=>{const b=document.createElement("button");b.className="option";b.textContent=`${i+1}　${v}`;b.onclick=()=>answerG5Reading(i,b);o.appendChild(b)});
+ document.getElementById("g5rEx").className="ex";document.getElementById("g5rEx").textContent="";
+ document.getElementById("g5rNext").style.display="none";
+}
+function answerG5Reading(i,b){
+ const x=g5Reading[g5ri];
+ document.querySelectorAll("#g5rOptions .option").forEach((q,n)=>{q.disabled=true;if(n===x[2])q.classList.add("correct")});
+ if(i===x[2]){g5rs++;b.classList.add("correct")}else{b.classList.add("wrong");saveWrong("reading",{id:"g5-"+g5ri,question:x[0],options:x[1],correctIndex:x[2],explanation:x[3]},i)}
+ document.getElementById("g5rScore").textContent=`正解 ${g5rs}`;
+ document.getElementById("g5rEx").textContent=(i===x[2]?"正解！ ":"不正解。 ")+x[3];
+ document.getElementById("g5rEx").className="ex show";
+ document.getElementById("g5rNext").style.display="block";
+ document.getElementById("g5rNext").textContent=g5ri===g5Reading.length-1?"結果を見る":"次の問題";
+}
+function nextG5Reading(){
+ if(g5ri<g5Reading.length-1){g5ri++;showG5Reading()}
+ else{document.getElementById("g5rQuestion").textContent=`終了：${g5rs} / ${g5Reading.length} 問正解`;document.getElementById("g5rOptions").innerHTML="";document.getElementById("g5rNext").style.display="none"}
+}
+
+let g5ListeningSession=[];
+let g5ListeningPos=0;
+
+function shuffleCopy(a){
+  const b=[...a];
+  for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}
+  return b;
+}
+function buildG5ListeningSession(){
+  const p1=shuffleCopy(g5Listening.filter(x=>x[0]==="第1部")).slice(0,10);
+  const p2=shuffleCopy(g5Listening.filter(x=>x[0]==="第2部")).slice(0,5);
+  const p3=shuffleCopy(g5Listening.filter(x=>x[0]==="第3部")).slice(0,10);
+  g5ListeningSession=[...p1,...p2,...p3];
+}
+function startG5Listening(){
+  g5li=0;g5ls=0;g5ListeningPos=0;
+  buildG5ListeningSession();
+  openSec("g5listening");showG5Listening();
+}
+function showG5Listening(){
+ const x=g5ListeningSession[g5ListeningPos];
+ document.getElementById("g5lTitle").textContent=`${g5ListeningPos+1} / ${g5ListeningSession.length}`;
+ document.getElementById("g5lScore").textContent=`正解 ${g5ls}`;
+ document.getElementById("g5lBar").style.width=`${g5ListeningPos/g5ListeningSession.length*100}%`;
+ document.getElementById("g5lPart").textContent=x[0];
+ document.getElementById("g5lQuestion").textContent=x[1];
+ const o=document.getElementById("g5lOptions");o.innerHTML="";
+ x[2].forEach((v,i)=>{const b=document.createElement("button");b.className="option";b.textContent=`${i+1}　${v}`;b.onclick=()=>answerG5Listening(i,b);o.appendChild(b)});
+ document.getElementById("g5lEx").className="ex";document.getElementById("g5lEx").textContent="";
+ document.getElementById("g5lNext").style.display="none";
+}
+function speakG5(){
+ const x=g5ListeningSession[g5ListeningPos];
+ speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(x[1]);
+ u.lang="en-US";u.rate=.82;
+ speechSynthesis.speak(u);
+}
+function answerG5Listening(i,b){
+ const x=g5ListeningSession[g5ListeningPos];
+ document.querySelectorAll("#g5lOptions .option").forEach((q,n)=>{q.disabled=true;if(n===x[3])q.classList.add("correct")});
+ if(i===x[3]){g5ls++;b.classList.add("correct")}
+ else{b.classList.add("wrong");saveWrong("listening",{id:"g5-"+g5ListeningPos+"-"+x[1],question:x[1],options:x[2],correctIndex:x[3],explanation:x[4]},i)}
+ document.getElementById("g5lScore").textContent=`正解 ${g5ls}`;
+ document.getElementById("g5lEx").textContent=(i===x[3]?"正解！ ":"不正解。 ")+x[4];
+ document.getElementById("g5lEx").className="ex show";
+ document.getElementById("g5lNext").style.display="block";
+ document.getElementById("g5lNext").textContent=g5ListeningPos===g5ListeningSession.length-1?"結果を見る":"次の問題";
+}
+function nextG5Listening(){
+ if(g5ListeningPos<g5ListeningSession.length-1){g5ListeningPos++;showG5Listening()}
+ else{
+   document.getElementById("g5lQuestion").textContent=`終了：${g5ls} / ${g5ListeningSession.length} 問正解`;
+   document.getElementById("g5lOptions").innerHTML="";
+   document.getElementById("g5lNext").style.display="none";
+ }
+}
 function getWrong(){return JSON.parse(localStorage.getItem("eikenP2Wrong")||"[]")}
 function saveWrong(type,x,userIndex){
  let r=getWrong();
