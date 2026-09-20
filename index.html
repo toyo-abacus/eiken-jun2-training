@@ -34,7 +34,7 @@ main{max-width:900px;margin:auto;padding:16px 13px 50px}
 textarea{width:100%;min-height:150px;border:2px solid #dce2eb;border-radius:12px;padding:12px;font:inherit}
 .pillrow{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}.pill{background:#eef2f7;border-radius:99px;padding:6px 10px;font-size:12px}
 .analysis{border-left:4px solid #2d70d6;padding-left:12px;margin:12px 0;line-height:1.7}
-.timer{font-size:28px;font-weight:800;text-align:center;margin:5px}.reviewItem{border:1px solid #dfe5ee;border-radius:13px;padding:13px;margin:10px 0;background:#fbfcfe}.reviewItem h3{font-size:15px;line-height:1.5;margin:0 0 8px}.answerBox{background:#eaf8f0;border-radius:9px;padding:9px;margin-top:8px;font-size:13px}.wrongTag{display:inline-block;background:#fff0f1;color:#b42332;border-radius:99px;padding:4px 8px;font-size:11px;font-weight:700;margin-bottom:6px}
+.timer{font-size:28px;font-weight:800;text-align:center;margin:5px}.sortWord{border:0;background:#eef2f7;border-radius:99px;padding:8px 12px;cursor:pointer;font-weight:700}.sortWord.selected{opacity:.45}.sortPicked{background:#eaf1ff;color:#245ca9;border-radius:99px;padding:7px 10px;margin:3px;cursor:pointer}.reviewItem{border:1px solid #dfe5ee;border-radius:13px;padding:13px;margin:10px 0;background:#fbfcfe}.reviewItem h3{font-size:15px;line-height:1.5;margin:0 0 8px}.answerBox{background:#eaf8f0;border-radius:9px;padding:9px;margin-top:8px;font-size:13px}.wrongTag{display:inline-block;background:#fff0f1;color:#b42332;border-radius:99px;padding:4px 8px;font-size:11px;font-weight:700;margin-bottom:6px}
 hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 @media(max-width:600px){.grid{grid-template-columns:1fr}.menu{min-height:96px}h1{font-size:21px}.question{font-size:18px}}
 </style>
@@ -79,23 +79,71 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 
 <section id="writing" class="section">
 <button class="back" onclick="openSec('home')">← メニュー</button>
+
 <div class="card">
-<span class="badge">問題5・Eメール</span>
-<h2>返信メール練習</h2>
-<p class="muted">過去問3回分と同じ形式を意識したオリジナル問題です。40～50語程度を目安に書き、相手のメール中の話題について具体的な質問を2つ入れる練習をします。</p>
+<span class="badge">ライティング練習</span>
+<h2>3ステップで英作文</h2>
+<p class="muted">いきなり英文を全部入力するのではなく、①並べ替え → ②穴埋め → ③自由英作文の順で練習します。</p>
+</div>
+
+<div class="card">
+<span class="badge">STEP 1</span>
+<h2>英文を並べ替える</h2>
+<p class="muted">タップして正しい語順に並べてください。</p>
+<p><b>Exercise is important for students.</b></p>
+<div id="sortTarget" class="pillrow" style="min-height:46px;border:2px dashed #dce2eb;border-radius:12px;padding:8px"></div>
+<div id="sortWords" class="pillrow"></div>
+<button class="btn" onclick="checkSort()">答え合わせ</button>
+<div id="sortResult" class="ex"></div>
+</div>
+
+<div class="card">
+<span class="badge">STEP 2</span>
+<h2>穴埋め英作文</h2>
+<p class="muted">文の重要部分を自分で考えて入力します。</p>
+<p><b>I think students should ______ at school.</b></p>
+<p><b>First, ______.</b></p>
+<p><b>Second, ______.</b></p>
+<textarea id="fillText" placeholder="learn practical skills&#10;they can use the skills in daily life&#10;they can prepare for the future"></textarea>
+<div id="fillWords" class="muted">0 words</div>
+<button class="btn" onclick="countWords('fillText','fillWords')">語数を数える</button>
+</div>
+
+<div class="card">
+<span class="badge">STEP 3</span>
+<h2>自由英作文</h2>
+<p class="muted">50～60語程度を目安に、自分の意見と理由2つを書きます。</p>
+<p><b>Do you think students should have more opportunities to learn practical skills at school?</b></p>
+
+<div class="pillrow">
+<span class="pill">キーボード入力</span>
+<span class="pill">🎤 iPhone音声入力</span>
+<span class="pill">✍️ iPad手書き</span>
+</div>
+
+<textarea id="essayText" placeholder="I think ..."></textarea>
+<div id="essayWords" class="muted">0 words</div>
+<button class="btn" onclick="countWords('essayText','essayWords')">語数を数える</button>
+
+<hr>
+<h3>セルフチェック</h3>
+<label><input type="checkbox" id="ckOpinion"> 自分の意見を書いた</label><br>
+<label><input type="checkbox" id="ckReason1"> 理由を1つ書いた</label><br>
+<label><input type="checkbox" id="ckReason2"> 理由を2つ書いた</label><br>
+<label><input type="checkbox" id="ckQuestion"> 質問・課題に答えている</label>
+<div id="essayCheck" class="ex"></div>
+<button class="btn" style="margin-top:10px" onclick="checkEssay()">チェックする</button>
+</div>
+
+<div class="card">
+<span class="badge">Eメール練習</span>
+<h2>問題5型</h2>
+<p class="muted">40～50語程度を目安に返信を書き、相手のメール中の話題について具体的な質問を2つ入れる練習です。</p>
 <p><b>Hi!</b><br>I visited a new community center in my town last weekend. It has a large study room, a small café, and a space where local people can hold events. I think it will be useful for many people. Do you think more towns should build places like this?</p>
 <p><b>Your friend,<br>Alex</b></p>
 <textarea id="emailText" placeholder="Hi, Alex!&#10;&#10;Thank you for your e-mail.&#10;..."></textarea>
 <div id="emailWords" class="muted">0 words</div>
 <button class="btn" onclick="countWords('emailText','emailWords')">語数を数える</button>
-<hr>
-<span class="badge">問題6・意見英作文</span>
-<h2>Opinion Essay</h2>
-<p class="muted">50～60語程度を目安に、意見＋理由2つを書きます。</p>
-<p><b>Do you think students should have more opportunities to learn practical skills at school?</b></p>
-<textarea id="essayText" placeholder="I think ..."></textarea>
-<div id="essayWords" class="muted">0 words</div>
-<button class="btn" onclick="countWords('essayText','essayWords')">語数を数える</button>
 </div>
 </section>
 
@@ -205,7 +253,7 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 <ol class="muted">
 <li>リーディング実戦では、過去問の大問構成を参考にしたリーディング問題を解きます。</li>
 <li>答えると正誤と簡単な解説が表示されます。</li>
-<li>ライティングは語数を確認しながら入力できます。</li>
+<li>ライティングは「並べ替え→穴埋め→自由英作文」の3段階で練習できます。自由英作文ではキーボード入力・iPhone音声入力・iPad手書きを利用できます。</li>
 <li>リスニングはiPhone/iPadのブラウザ音声合成で英文を再生できます。</li>
 <li>成績と間違えた問題は、この端末のブラウザに保存されます。</li>
 </ol>
@@ -300,6 +348,42 @@ function listenCheck(b,ok){
  }
  let ex=box.nextElementSibling;if(ex&&ex.classList.contains("ex"))ex.classList.add("show");
 }
+
+const sortAnswer=["Exercise","is","important","for","students."];
+const sortPool=["Exercise","is","important","for","students."];
+let sortPicked=[];
+function initSort(){
+ const box=document.getElementById("sortWords"); if(!box)return;
+ box.innerHTML="";
+ shuffle(sortPool).forEach((w,i)=>{
+   const b=document.createElement("button"); b.className="sortWord"; b.textContent=w;
+   b.onclick=()=>pickSort(i,w,b); box.appendChild(b);
+ });
+ document.getElementById("sortTarget").innerHTML="";
+ document.getElementById("sortResult").className="ex";
+ sortPicked=[];
+}
+function pickSort(i,w,b){
+ if(sortPicked.length>=sortAnswer.length)return;
+ sortPicked.push(w); b.classList.add("selected");
+ const t=document.createElement("button"); t.className="sortPicked"; t.textContent=w;
+ t.onclick=()=>{sortPicked.splice(sortPicked.indexOf(w),1);b.classList.remove("selected");t.remove()};
+ document.getElementById("sortTarget").appendChild(t);
+}
+function checkSort(){
+ const ok=sortPicked.join(" ")===sortAnswer.join(" ");
+ const r=document.getElementById("sortResult");
+ r.textContent=ok?"正解！ 正しい語順です。":"もう一度確認しましょう。正しい語順：Exercise is important for students.";
+ r.className="ex show";
+}
+function checkEssay(){
+ const checks=["ckOpinion","ckReason1","ckReason2","ckQuestion"].filter(id=>document.getElementById(id).checked).length;
+ const r=document.getElementById("essayCheck");
+ r.textContent=checks===4?"セルフチェックOKです。":"まだ確認できていない項目があります。意見・理由2つ・質問への回答を確認してください。";
+ r.className="ex show";
+}
+initSort();
+
 function getWrong(){return JSON.parse(localStorage.getItem("eikenP2Wrong")||"[]")}
 function saveWrong(type,x,userIndex){
  let r=getWrong();
