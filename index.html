@@ -46,7 +46,7 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 .listenPlayBtn,.listenReplayBtn{border:0;border-radius:12px;padding:13px 22px;font-size:17px;font-weight:700;cursor:pointer;background:#315a9b;color:#fff;margin:4px}
 .listenReplayBtn{background:#667085}
 .listenStatus{margin-top:10px;font-size:13px;color:#687386}
-</style>
+.listenReviewScript{display:inline-block;margin-top:6px;padding:6px 8px;border-radius:8px;background:#f3f4f6}</style>
 </head>
 <body>
 <header><div class="header"><h1>英検トレーニング</h1><div class="sub">過去問3回分の出題形式・傾向を参考にしたオリジナル練習</div></div></header>
@@ -609,60 +609,57 @@ function startListeningQuiz(){
   lSession=[...p1,...p2,...p3]; li=0;ls=0;
   openSec("lquiz");showLQ();
 }
+function lqPartNo(x){return x[0]==="第1部"?1:(x[0]==="第2部"?2:3);}
+function renderListeningChoices(container,x){
+ const part=lqPartNo(x); container.innerHTML="";
+ x[2].forEach((v,i)=>{
+   const b=document.createElement("button"); b.className="option";
+   b.textContent=part===1?String(i+1):`${i+1}　${v}`;
+   b.onclick=()=>answerLQ(i,b); container.appendChild(b);
+ });
+}
 function showLQ(){
- const x=lSession[li];
+ const x=lSession[li], part=lqPartNo(x);
  document.getElementById("lTitle").textContent=`${li+1} / ${lSession.length}`;
  document.getElementById("lScore").textContent=`正解 ${ls}`;
  document.getElementById("lBar").style.width=`${li/lSession.length*100}%`;
- document.getElementById("lPart").textContent=x[0];
- document.getElementById("lQ").textContent="🎧 音声を聞いてください";
+ document.getElementById("lPart").textContent=`第${part}部`;
+ document.getElementById("lQ").textContent=part===1?"🎧 音声を聞いてください":"🎧 選択肢を見ながら音声を聞いてください";
  document.getElementById("lQ").className="question listenHiddenQuestion";
- document.getElementById("lOpts").innerHTML="";
- document.getElementById("lEx").className="ex";
- document.getElementById("lEx").textContent="";
- document.getElementById("lNext").style.display="none";
- document.getElementById("lResult").style.display="none";
+ document.getElementById("lEx").className="ex"; document.getElementById("lEx").textContent="";
+ document.getElementById("lNext").style.display="none"; document.getElementById("lResult").style.display="none";
+ const o=document.getElementById("lOpts"); o.innerHTML="";
+ if(part!==1){renderListeningChoices(o,x);document.querySelectorAll("#lOpts .option").forEach(b=>b.disabled=true);}
  document.getElementById("lAudioPanel").innerHTML=`
  <div class="listenAudioCard">
-  <div class="listenAudioIcon">🎧</div>
-  <div class="listenAudioTitle">音声を聞いてください</div>
-  <div class="listenAudioSub">音声を聞き終わるまで、問題と選択肢は表示されません。</div>
-  <button class="listenPlayBtn" onclick="speakLQAndReveal()">▶ 音声を再生</button>
-  <button class="listenReplayBtn" onclick="speakLQ()" style="display:none">🔁 もう一度聞く</button>
-  <div id="lAudioStatus" class="listenStatus">再生前</div>
- </div>`;
-}
-function speakLQ(){
- const x=lSession[li]; speechSynthesis.cancel();
- const u=new SpeechSynthesisUtterance(x[1]);u.lang="en-US";u.rate=.82;
- speechSynthesis.speak(u);
+ <div class="listenAudioIcon">🎧</div>
+ <div class="listenAudioTitle">${part===1?"音声だけを聞いてください":"選択肢を確認して音声を聞いてください"}</div>
+ <div class="listenAudioSub">${part===1?"問題文・選択肢は表示されません。音声の中で選択肢も読み上げられます。":"問題文は表示しません。選択肢だけを見ながら音声を聞きます。"}</div>
+ <button class="listenPlayBtn" onclick="speakLQAndReveal()">▶ 音声を再生</button>
+ <div id="lAudioStatus" class="listenStatus">まだ再生していません</div></div>`;
 }
 function speakLQAndReveal(){
- const x=lSession[li]; const st=document.getElementById("lAudioStatus");if(st)st.textContent="再生中…";
- speechSynthesis.cancel();
- const u=new SpeechSynthesisUtterance(x[1]);u.lang="en-US";u.rate=.82;
- u.onend=()=>revealLQ();speechSynthesis.speak(u);
+ const x=lSession[li]; const st=document.getElementById("lAudioStatus");
+ if(st)st.textContent="再生中…（1回）";
+ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(x[1]);u.lang="en-US";u.rate=.82;
+ u.onend=()=>revealLQ(); speechSynthesis.speak(u);
 }
 function revealLQ(){
- const x=lSession[li];
- document.getElementById("lQ").textContent=x[1];
+ const x=lSession[li],part=lqPartNo(x);
+ document.getElementById("lQ").textContent=part===1?"音声を聞き終わりました。番号を選んでください。":"音声を聞き終わりました。答えを選んでください。";
  document.getElementById("lQ").className="question";
- const o=document.getElementById("lOpts");o.innerHTML="";
- x[2].forEach((v,i)=>{const b=document.createElement("button");b.className="option";b.textContent=`${i+1}　${v}`;b.onclick=()=>answerLQ(i,b);o.appendChild(b)});
- const panel=document.getElementById("lAudioPanel");
- panel.querySelector(".listenPlayBtn").style.display="none";
- panel.querySelector(".listenReplayBtn").style.display="inline-block";
+ if(part===1)renderListeningChoices(document.getElementById("lOpts"),x);
+ document.querySelectorAll("#lOpts .option").forEach(b=>b.disabled=false);
  document.getElementById("lAudioStatus").textContent="音声再生済み";
 }
 function answerLQ(i,b){
- const x=lSession[li];
+ const x=lSession[li],part=lqPartNo(x);
  document.querySelectorAll("#lOpts .option").forEach((q,n)=>{q.disabled=true;if(n===x[3])q.classList.add("correct")});
- const ok=i===x[3]; if(ok){ls++;b.classList.add("correct")}else{b.classList.add("wrong");saveWrong("listening",{id:"p2-"+li+"-"+x[1],question:x[1],options:x[2],correctIndex:x[3],explanation:x[4]},i)}
+ const ok=i===x[3];if(ok){ls++;b.classList.add("correct")}else{b.classList.add("wrong");saveWrong("listening",{id:"p2-"+li+"-"+x[1],question:x[1],options:x[2],correctIndex:x[3],explanation:x[4],script:x[1],part:part},i)}
  document.getElementById("lScore").textContent=`正解 ${ls}`;
- document.getElementById("lEx").textContent=(ok?"正解！ ":"不正解。 ")+x[4];
+ document.getElementById("lEx").innerHTML=`<b>${ok?"正解！":"不正解。"}</b><br>正解：${x[3]+1}　${x[2][x[3]]}<br><span class="listenReviewScript">📝 復習用スクリプト：${x[1]}</span><br><span>${x[4]}</span>`;
  document.getElementById("lEx").className="ex show";
- document.getElementById("lNext").style.display="block";
- document.getElementById("lNext").textContent=li===lSession.length-1?"結果を見る":"次の問題";
+ document.getElementById("lNext").style.display="block";document.getElementById("lNext").textContent=li===lSession.length-1?"結果を見る":"次の問題";
 }
 function nextLQ(){
  if(li<lSession.length-1){li++;showLQ()}
@@ -694,91 +691,35 @@ function startG5Listening(){
   buildG5ListeningSession();
   openSec("g5listening");showG5Listening();
 }
+function g5PartNo(x){return x[0]==="第1部"?1:(x[0]==="第2部"?2:3);}
+function renderG5Choices(container,x){
+ const part=g5PartNo(x);container.innerHTML="";
+ x[2].forEach((v,i)=>{const b=document.createElement("button");b.className="option";b.textContent=part===1?String(i+1):`${i+1}　${v}`;b.onclick=()=>answerG5Listening(i,b);container.appendChild(b)});
+}
 function showG5Listening(){
- const x=g5ListeningSession[g5ListeningPos];
+ const x=g5ListeningSession[g5ListeningPos],part=g5PartNo(x);
  document.getElementById("g5lTitle").textContent=`${g5ListeningPos+1} / ${g5ListeningSession.length}`;
  document.getElementById("g5lScore").textContent=`正解 ${g5ls}`;
  document.getElementById("g5lBar").style.width=`${g5ListeningPos/g5ListeningSession.length*100}%`;
- document.getElementById("g5lPart").textContent=x[0];
-
- const q=document.getElementById("g5lQuestion");
- const o=document.getElementById("g5lOptions");
- const ex=document.getElementById("g5lEx");
- const next=document.getElementById("g5lNext");
-
- // Before the audio is heard, hide all question text and choices.
- q.textContent="🎧 音声を聞いてください";
- q.className="listenHiddenQuestion";
- o.innerHTML="";
- ex.className="ex";
- ex.textContent="";
- next.style.display="none";
- next.textContent="次の問題";
-
- // Build a simple audio-first panel. Browser speech is used for original questions.
+ document.getElementById("g5lPart").textContent=`第${part}部`;
+ document.getElementById("g5lQuestion").textContent=part===1?"🎧 音声を聞いてください":"🎧 選択肢を見ながら音声を聞いてください";
+ document.getElementById("g5lQuestion").className="listenHiddenQuestion";
+ document.getElementById("g5lEx").className="ex";document.getElementById("g5lEx").textContent="";
+ document.getElementById("g5lNext").style.display="none";
+ const o=document.getElementById("g5lOptions")||document.getElementById("g5lOpts");if(o)o.innerHTML="";
  const panel=document.getElementById("g5lAudioPanel");
- if(panel){
-   panel.innerHTML=`
-     <div class="listenAudioCard">
-       <div class="listenAudioIcon">🎧</div>
-       <div class="listenAudioTitle">音声を聞いてください</div>
-       <div class="listenAudioSub">音声を聞き終わるまで、問題と選択肢は表示されません。</div>
-       <button class="listenPlayBtn" onclick="speakG5AndReveal()">▶ 音声を再生</button>
-       <button class="listenReplayBtn" onclick="speakG5()" style="display:none">🔁 もう一度聞く</button>
-       <div id="g5lAudioStatus" class="listenStatus">再生前</div>
-     </div>`;
- }
+ if(panel)panel.innerHTML=`<div class="listenAudioCard"><div class="listenAudioIcon">🎧</div><div class="listenAudioTitle">${part===1?"音声だけを聞いてください":"選択肢を確認して音声を聞いてください"}</div><div class="listenAudioSub">${part===1?"問題文・選択肢は表示されません。音声の中で選択肢も読み上げられます。":"問題文は表示しません。選択肢だけを見ながら音声を聞きます。"}</div><button class="listenPlayBtn" onclick="speakG5AndReveal()">▶ 音声を再生</button><div id="g5lAudioStatus" class="listenStatus">まだ再生していません</div></div>`;
 }
-
-function revealG5Listening(){
- const x=g5ListeningSession[g5ListeningPos];
- const q=document.getElementById("g5lQuestion");
- const o=document.getElementById("g5lOptions");
- const ex=document.getElementById("g5lEx");
- const next=document.getElementById("g5lNext");
-
- q.textContent = x[1];
- q.className="";
- o.innerHTML="";
- x[2].forEach((v,i)=>{
-   const b=document.createElement("button");
-   b.className="option";
-   b.textContent=`${i+1}　${v}`;
-   b.onclick=()=>answerG5Listening(i,b);
-   o.appendChild(b);
- });
- ex.className="ex";
- ex.textContent="";
- next.style.display="none";
-
- const panel=document.getElementById("g5lAudioPanel");
- if(panel){
-   const play=panel.querySelector(".listenPlayBtn");
-   const replay=panel.querySelector(".listenReplayBtn");
-   const status=panel.querySelector(".listenStatus");
-   if(play) play.style.display="none";
-   if(replay) replay.style.display="inline-block";
-   if(status) status.textContent="音声再生済み";
- }
-}
-
 function speakG5AndReveal(){
- const x=g5ListeningSession[g5ListeningPos];
- const status=document.getElementById("g5lAudioStatus");
- if(status) status.textContent="再生中…";
- speechSynthesis.cancel();
- const u=new SpeechSynthesisUtterance(x[1]);
- u.lang="en-US";u.rate=.82;
- u.onend=()=>revealG5Listening();
- speechSynthesis.speak(u);
+ const x=g5ListeningSession[g5ListeningPos],st=document.getElementById("g5lAudioStatus");if(st)st.textContent="再生中…（1回）";
+ speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(x[1]);u.lang="en-US";u.rate=.82;u.onend=()=>revealG5Listening();speechSynthesis.speak(u);
 }
-
-function speakG5(){
- const x=g5ListeningSession[g5ListeningPos];
- speechSynthesis.cancel();
- const u=new SpeechSynthesisUtterance(x[1]);
- u.lang="en-US";u.rate=.82;
- speechSynthesis.speak(u);
+function revealG5Listening(){
+ const x=g5ListeningSession[g5ListeningPos],part=g5PartNo(x);
+ const q=document.getElementById("g5lQuestion");q.textContent=part===1?"音声を聞き終わりました。番号を選んでください。":"音声を聞き終わりました。答えを選んでください。";q.className="question";
+ const o=document.getElementById("g5lOptions")||document.getElementById("g5lOpts");if(o)renderG5Choices(o,x);
+ document.querySelectorAll("#g5lOptions .option,#g5lOpts .option").forEach(b=>b.disabled=false);
+ const st=document.getElementById("g5lAudioStatus");if(st)st.textContent="音声再生済み";
 }
 function answerG5Listening(i,b){
  const x=g5ListeningSession[g5ListeningPos];
