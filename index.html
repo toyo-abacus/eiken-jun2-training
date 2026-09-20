@@ -384,11 +384,11 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 <button class="back" onclick="openSec('g5menu')">← 5級メニュー</button>
 <div class="card">
 <span class="badge">5級・リスニング</span>
-<p class="muted">過去問の第1部・第2部・第3部の形式を分析したオリジナル問題を大量に収録。第1部10問・第2部5問・第3部10問を各問題プールからランダムに出題。音声を先に聞き、終了後に問題と選択肢を表示します。</p>
+<p class="muted">過去問の第1部・第2部・第3部の形式を分析したオリジナル問題を収録。第1部10問・第2部5問・第3部10問を各問題プールからランダムに出題します。</p>
 <div class="meta"><span id="g5lTitle">1 / 25</span><span id="g5lScore">正解 0</span></div>
 <div class="progress"><div id="g5lBar" class="bar"></div></div>
 <div id="g5lPart" class="badge"></div>
-<button class="btn" onclick="speakG5()">🔊 英文を聞く</button>
+<div id="g5lAudioPanel"></div>
 <div id="g5lQuestion" class="question"></div>
 <div id="g5lOptions" class="options"></div>
 <div id="g5lEx" class="ex"></div>
@@ -569,13 +569,31 @@ const g5Reading=[
 ["A: How old are you? B: I am ( ) years old.",["ten","tenly","tenth","tens"],0,"年齢には基数tenを使います。"]
 ];
 
+
 let g5ri=0,g5rs=0,g5li=0,g5ls=0;
-function startG5Reading(){g5ri=0;g5rs=0;openSec("g5reading");showG5Reading()}
+let g5ReadingSession=[];
+function shuffleArray(a){
+ const b=[...a];
+ for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}
+ return b;
+}
+function buildG5ReadingSession(){
+ // Every attempt gets a different question order AND different choice order.
+ // The correct answer index is recalculated after choices are shuffled.
+ g5ReadingSession=shuffleArray(g5Reading).map((x,order)=>{
+   const choices=x[1].map((text,idx)=>({text,correct:idx===x[2]}));
+   const shuffled=shuffleArray(choices);
+   return [x[0],shuffled.map(v=>v.text),shuffled.findIndex(v=>v.correct),x[3],`g5-r-${order}-${x[0]}`];
+ });
+}
+function startG5Reading(){
+ g5ri=0;g5rs=0;buildG5ReadingSession();openSec("g5reading");showG5Reading()
+}
 function showG5Reading(){
- const x=g5Reading[g5ri];
- document.getElementById("g5rTitle").textContent=`${g5ri+1} / ${g5Reading.length}`;
+ const x=g5ReadingSession[g5ri];
+ document.getElementById("g5rTitle").textContent=`${g5ri+1} / ${g5ReadingSession.length}`;
  document.getElementById("g5rScore").textContent=`正解 ${g5rs}`;
- document.getElementById("g5rBar").style.width=`${g5ri/g5Reading.length*100}%`;
+ document.getElementById("g5rBar").style.width=`${g5ri/g5ReadingSession.length*100}%`;
  document.getElementById("g5rQuestion").textContent=x[0];
  const o=document.getElementById("g5rOptions");o.innerHTML="";
  x[1].forEach((v,i)=>{const b=document.createElement("button");b.className="option";b.textContent=`${i+1}　${v}`;b.onclick=()=>answerG5Reading(i,b);o.appendChild(b)});
@@ -585,18 +603,19 @@ function showG5Reading(){
 const g5Listening=[["第1部","A: What are you doing after school?\nB: I'm going to the library.\nA: Why are you going there?\nB: I need a book for my science class.\nA: I see. What will you do first?",["Play soccer.","Go home.","Get a book."],2,"会話の最後の発話に対する応答を選びます。"],["第1部","A: Is this your umbrella?\nB: No, it isn't. Mine is blue.\nA: Oh, I see a blue one over there.\nB: Yes, that's mine.\nA: Where is your umbrella now?",["In the kitchen.","By the door.","On the desk."],1,"会話の最後の発話に対する応答を選びます。"],["第1部","A: What do you want for breakfast?\nB: I'd like some toast, please.\nA: Would you like some fruit, too?\nB: Yes, please.\nA: What does B want for breakfast?",["Toast and fruit.","Rice and soup.","Eggs and milk."],0,"会話の最後の発話に対する応答を選びます。"],["第1部","A: Can you come to the park this afternoon?\nB: I'm sorry. I have a piano lesson.\nA: Oh, that's too bad.\nB: Maybe I can go tomorrow.\nA: Why can't B go today?",["Because of the weather.","Because of homework.","Because of a piano lesson."],2,"会話の最後の発話に対する応答を選びます。"],["第1部","A: Look at these three bags. Which one do you like?\nB: I like the red one.\nA: The red one is nice.\nB: Yes, and it's not too big.\nA: Which bag does B like?",["The green bag.","The red bag.","The blue bag."],1,"会話の最後の発話に対する応答を選びます。"],["第1部","A: What time will you leave home tomorrow?\nB: At seven thirty.\nA: That's early.\nB: Yes. I have a soccer game at nine.\nA: Why will B leave early?",["For a soccer game.","For a music lesson.","For a school test."],0,"会話の最後の発話に対する応答を選びます。"],["第1部","A: Where is your sister?\nB: She's in the kitchen.\nA: What is she doing?\nB: She's making a sandwich.\nA: What is B's sister doing?",["Reading a book.","Cleaning the room.","Making a sandwich."],2,"会話の最後の発話に対する応答を選びます。"],["第1部","A: Did you buy anything at the store?\nB: Yes. I bought a new notebook.\nA: What color is it?\nB: It's green.\nA: What did B buy?",["A red pencil.","A green notebook.","A blue bag."],1,"会話の最後の発話に対する応答を選びます。"],["第1部","A: Are you hungry?\nB: Yes, a little.\nA: Let's get something to eat.\nB: Good idea. I want a hamburger.\nA: What does B want?",["A hamburger.","A sandwich.","A pizza."],0,"会話の最後の発話に対する応答を選びます。"],["第1部","A: How do you go to school?\nB: I usually ride my bike.\nA: How long does it take?\nB: About fifteen minutes.\nA: How does B usually go to school?",["By bus.","On foot.","By bike."],2,"会話の最後の発話に対する応答を選びます。"],["第2部","A: What time does the movie start?\nB: It starts at two o'clock.\nQ: What time does the movie start?",["At two.","At three.","At four.","At one."],0,"会話の内容についての質問に答えます。"],["第2部","A: Where is your brother?\nB: He's at the sports center. He is playing basketball.\nQ: Where is the brother?",["At the library.","At the station.","At the sports center.","At the supermarket."],2,"会話の内容についての質問に答えます。"],["第2部","A: What did you have for lunch?\nB: I had a sandwich and an apple.\nQ: What did B have?",["Pasta and salad.","A sandwich and an apple.","Rice and fish.","Soup and bread."],1,"会話の内容についての質問に答えます。"],["第2部","A: When will you visit your grandmother?\nB: I'll visit her on Sunday.\nQ: When will B visit her?",["Sunday.","Monday.","Friday.","Saturday."],0,"会話の内容についての質問に答えます。"],["第2部","A: Why are you going to the store?\nB: I need to buy some milk.\nQ: Why is B going to the store?",["To meet a friend.","To buy a book.","To get a ticket.","To buy milk."],3,"会話の内容についての質問に答えます。"],["第2部","A: What sport does Ken like?\nB: He likes tennis. He plays every Saturday.\nQ: What sport does Ken like?",["Soccer.","Tennis.","Baseball.","Swimming."],1,"会話の内容についての質問に答えます。"],["第2部","A: Where did Anna leave her bag?\nB: She left it under the table.\nQ: Where is Anna's bag?",["In the car.","On the chair.","By the door.","Under the table."],3,"会話の内容についての質問に答えます。"],["第2部","A: What will Tom do after dinner?\nB: He will do his homework.\nQ: What will Tom do after dinner?",["Go shopping.","Play tennis.","Watch TV.","Do his homework."],3,"会話の内容についての質問に答えます。"],["第2部","A: Who is coming to the party?\nB: My cousin Mike is coming.\nQ: Who is coming?",["His cousin Mike.","His brother.","His neighbor.","His teacher."],0,"会話の内容についての質問に答えます。"],["第2部","A: How will you go to Kyoto?\nB: I'll go by train.\nQ: How will B go to Kyoto?",["By bus.","By car.","By train.","By plane."],2,"会話の内容についての質問に答えます。"],["第3部","A: Look at the pictures. Listen carefully.\nB: The girl is reading a book in the library.\nQ: Which picture is correct?",["⚽👦 Boy playing soccer","🍎👧 Girl eating an apple","📚👧 Girl reading in a library"],2,"短い英文を聞き、内容に合うイラストを選びます。"],["第3部","A: Look at the pictures. Listen carefully.\nB: The boy is riding a bicycle in the park.\nQ: Which picture is correct?",["🎹👦 Boy playing piano","🚲👦 Boy riding a bicycle","📖👧 Girl reading a book"],1,"短い英文を聞き、内容に合うイラストを選びます。"],["第3部","A: Look at the pictures. Listen carefully.\nB: The girl is eating an apple at the table.\nQ: Which picture is correct?",["🍎👧 Girl eating an apple","⚽👦 Boy playing soccer","🚲👧 Girl riding a bicycle"],0,"短い英文を聞き、内容に合うイラストを選びます。"],["第3部","A: Look at the pictures. Listen carefully.\nB: The boy is playing soccer outside.\nQ: Which picture is correct?",["⚽👦 Boy playing soccer","📚👧 Girl reading","🎹👧 Girl playing piano"],0,"短い英文を聞き、内容に合うイラストを選びます。"],["第3部","A: Look at the pictures. Listen carefully.\nB: The girl is washing a car.\nQ: Which picture is correct?",["📖👦 Boy reading","🚗🧽👧 Girl washing a car","🍎👦 Boy eating an apple"],1,"短い英文を聞き、内容に合うイラストを選びます。"],["第3部","A: Look at the pictures. Listen carefully.\nB: The boy is drinking juice in the kitchen.\nQ: Which picture is correct?",["🥤👦 Boy drinking juice","⚽👧 Girl playing soccer","🚲👦 Boy riding a bicycle"],0,"短い英文を聞き、内容に合うイラストを選びます。"],["第3部","A: Look at the pictures. Listen carefully.\nB: The girl is playing the piano.\nQ: Which picture is correct?",["📚👦 Boy reading","🍎👧 Girl eating","🎹👧 Girl playing piano"],2,"短い英文を聞き、内容に合うイラストを選びます。"],["第3部","A: Look at the pictures. Listen carefully.\nB: The boy is walking a dog.\nQ: Which picture is correct?",["⚽👦 Boy playing soccer","🐕👦 Boy walking a dog","🚲👧 Girl riding a bicycle"],1,"短い英文を聞き、内容に合うイラストを選びます。"],["第3部","A: Look at the pictures. Listen carefully.\nB: The girl is drawing a picture.\nQ: Which picture is correct?",["🎨👧 Girl drawing a picture","🥤👦 Boy drinking juice","🎹👧 Girl playing piano"],0,"短い英文を聞き、内容に合うイラストを選びます。"],["第3部","A: Look at the pictures. Listen carefully.\nB: The boy is studying English at his desk.\nQ: Which picture is correct?",["🚗👧 Girl washing a car","⚽👦 Boy playing soccer","📚👦 Boy studying at a desk"],2,"短い英文を聞き、内容に合うイラストを選びます。"]];
 
 function answerG5Reading(i,b){
- const x=g5Reading[g5ri];
+ const x=g5ReadingSession[g5ri];
  document.querySelectorAll("#g5rOptions .option").forEach((q,n)=>{q.disabled=true;if(n===x[2])q.classList.add("correct")});
- if(i===x[2]){g5rs++;b.classList.add("correct")}else{b.classList.add("wrong");saveG5Wrong({id:"g5-r-"+g5ri,part:"リーディング",type:"reading",question:x[0],options:x[1],correctIndex:x[2],explanation:x[3]},i)}
+ if(i===x[2]){g5rs++;b.classList.add("correct")}
+ else{b.classList.add("wrong");saveG5Wrong({id:x[4],part:"リーディング",type:"reading",question:x[0],options:x[1],correctIndex:x[2],explanation:x[3]},i)}
  document.getElementById("g5rScore").textContent=`正解 ${g5rs}`;
  document.getElementById("g5rEx").textContent=(i===x[2]?"正解！ ":"不正解。 ")+x[3];
  document.getElementById("g5rEx").className="ex show";
  document.getElementById("g5rNext").style.display="block";
- document.getElementById("g5rNext").textContent=g5ri===g5Reading.length-1?"結果を見る":"次の問題";
+ document.getElementById("g5rNext").textContent=g5ri===g5ReadingSession.length-1?"結果を見る":"次の問題";
 }
 function nextG5Reading(){
- if(g5ri<g5Reading.length-1){g5ri++;showG5Reading()}
- else{document.getElementById("g5rQuestion").textContent=`終了：${g5rs} / ${g5Reading.length} 問正解`;document.getElementById("g5rOptions").innerHTML="";document.getElementById("g5rNext").style.display="none"}
+ if(g5ri<g5ReadingSession.length-1){g5ri++;showG5Reading()}
+ else{document.getElementById("g5rQuestion").textContent=`終了：${g5rs} / ${g5ReadingSession.length} 問正解`;document.getElementById("g5rOptions").innerHTML="";document.getElementById("g5rNext").style.display="none"}
 }
 
 
@@ -708,24 +727,35 @@ function renderG5Choices(container,x){
  });
 }
 function g5Speech(text,onDone,repeat=2){
- if(!("speechSynthesis" in window)){alert("この端末では音声再生に対応していません。Safari/Chromeの最新版をお試しください。");return false}
+ if(!("speechSynthesis" in window)){
+   alert("この端末では音声再生に対応していません。Safari/Chromeの最新版をお試しください。");
+   return false;
+ }
  const token=++g5AudioToken;
- speechSynthesis.cancel();
+ const synth=window.speechSynthesis;
+ synth.cancel();
  let count=0;
  const playOne=()=>{
    if(token!==g5AudioToken)return;
    const u=new SpeechSynthesisUtterance(text);
    u.lang="en-US";u.rate=.82;u.pitch=1;
    u.onend=()=>{
+     if(token!==g5AudioToken)return;
      count++;
-     if(count<repeat){setTimeout(playOne,450)}
-     else if(token===g5AudioToken)onDone();
+     if(count<repeat){setTimeout(playOne,700)}
+     else onDone();
    };
-   u.onerror=()=>{ if(token===g5AudioToken){setTimeout(playOne,300)} };
-   // iOS/Safari can behave better when speech starts from a fresh utterance.
-   speechSynthesis.speak(u);
+   u.onerror=()=>{
+     if(token!==g5AudioToken)return;
+     // Some iOS WebViews intermittently fail an utterance. Retry once after a short pause.
+     setTimeout(playOne,700);
+   };
+   // Force a fresh queue after cancel; this is more reliable on iPhone/iPad Safari.
+   synth.cancel();
+   setTimeout(()=>{if(token===g5AudioToken)synth.speak(u)},80);
  };
- playOne();
+ // A tiny delay after the user tap gives iOS a clean speech-activation boundary.
+ setTimeout(playOne,80);
  return true;
 }
 function showG5Listening(){
