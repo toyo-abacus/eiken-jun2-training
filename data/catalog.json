@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "1.0",
+  "updatedAt": "2026-09-21",
+  "grades": [
+    { "id": "g5", "label": "5級", "officialSpecificationStatus": "confirmed", "questionDataStatus": "legacy-reading-audited", "learningImplementationStatus": "reading-p1-pilot", "examModeStatus": "not-started" },
+    { "id": "g4", "label": "4級", "officialSpecificationStatus": "confirmed", "questionDataStatus": "awaiting-materials", "learningImplementationStatus": "not-started", "examModeStatus": "not-started" },
+    { "id": "g3", "label": "3級", "officialSpecificationStatus": "confirmed", "questionDataStatus": "awaiting-materials", "learningImplementationStatus": "not-started", "examModeStatus": "not-started" },
+    { "id": "p2", "label": "準2級", "officialSpecificationStatus": "confirmed", "questionDataStatus": "legacy-inline-data-present", "learningImplementationStatus": "legacy-implementation-present", "examModeStatus": "not-started" },
+    { "id": "p2plus", "label": "準2級プラス", "officialSpecificationStatus": "confirmed", "questionDataStatus": "awaiting-materials", "learningImplementationStatus": "not-started", "examModeStatus": "not-started" },
+    { "id": "g2", "label": "2級", "officialSpecificationStatus": "confirmed", "questionDataStatus": "awaiting-materials", "learningImplementationStatus": "not-started", "examModeStatus": "not-started" },
+    { "id": "p1", "label": "準1級", "officialSpecificationStatus": "confirmed", "questionDataStatus": "awaiting-materials", "learningImplementationStatus": "not-started", "examModeStatus": "not-started" },
+    { "id": "g1", "label": "1級", "officialSpecificationStatus": "confirmed", "questionDataStatus": "awaiting-materials", "learningImplementationStatus": "not-started", "examModeStatus": "not-started" }
+  ]
+}

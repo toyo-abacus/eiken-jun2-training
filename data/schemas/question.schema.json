@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Eiken training question",
+  "type": "object",
+  "required": ["schemaVersion", "id", "grade", "skill", "part", "questionType", "sourceType", "difficulty", "tags"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "id": { "type": "string", "pattern": "^(G5|G4|G3|P2|P2P|G2|P1|G1)-(R|L|W|S|V)-(P[0-9]+|LEGACY)-[0-9]{4}$" },
+    "grade": { "enum": ["g5", "g4", "g3", "p2", "p2plus", "g2", "p1", "g1"] },
+    "skill": { "enum": ["reading", "listening", "writing", "speaking", "vocabulary"] },
+    "part": { "type": "string", "pattern": "^P[0-9]+$" },
+    "questionType": { "type": "string", "minLength": 1 },
+    "prompt": { "type": ["string", "null"] },
+    "choices": { "type": "array", "items": { "type": "object", "required": ["id", "text"], "properties": { "id": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_-]*$" }, "text": { "type": "string" }, "image": { "type": ["string", "null"] } } } },
+    "correctChoiceId": { "type": "string", "minLength": 1, "description": "For choice questions, the permanent ID of the correct choice." },
+    "answer": { "type": "object", "properties": { "correctChoiceId": { "type": "string" }, "correctTokenOrder": { "type": "array", "items": { "type": "string" } } } },
+    "explanation": { "type": "string" },
+    "translation": { "type": ["string", "null"] },
+    "script": { "type": ["string", "null"] },
+    "difficulty": { "type": ["integer", "null"], "minimum": 1, "maximum": 5 },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "sourceType": { "enum": ["original", "official-reference", "legacy", "unknown"] },
+    "sourceReference": { "type": ["string", "null"] },
+    "source": { "type": "object", "required": ["type"], "properties": { "type": { "enum": ["original", "official-reference", "legacy"] }, "reference": { "type": ["string", "null"] } } },
+    "media": { "type": "object", "properties": { "audio": { "type": ["object", "null"], "properties": { "assetPath": { "type": "string" }, "playbackCount": { "type": "integer", "minimum": 1 } } }, "image": { "type": ["object", "null"], "properties": { "assetPath": { "type": "string" }, "alt": { "type": "string" } } } } }
+  }
+}

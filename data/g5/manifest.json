@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "1.0",
+  "grade": "g5",
+  "label": "5級",
+  "officialSpecificationStatus": "confirmed",
+  "questionDataStatus": "legacy-reading-audited",
+  "exam": {
+    "reading": {
+      "durationMinutes": 25,
+      "totalQuestions": 25,
+      "parts": [
+        { "id": "P1", "label": "短文の語句空所補充", "questionType": "multiple-choice-cloze", "questionCount": 15, "choiceCount": 4, "choicePresentation": "printed" },
+        { "id": "P2", "label": "会話文の文空所補充", "questionType": "dialogue-cloze", "questionCount": 5, "choiceCount": 4, "choicePresentation": "printed" },
+        { "id": "P3", "label": "日本文付き短文の語句整序", "questionType": "word-order", "questionCount": 5, "choicePresentation": "word-cards" }
+      ]
+    },
+    "listening": {
+      "durationMinutes": 20,
+      "totalQuestions": 25,
+      "parts": [
+        { "id": "P1", "label": "会話の応答文選択", "questionType": "response-choice", "questionCount": 10, "choiceCount": 3, "choicePresentation": "spoken", "supplementalIllustration": true, "officialPlaybackCount": 2 },
+        { "id": "P2", "label": "会話の内容一致選択", "questionType": "dialogue-comprehension", "questionCount": 5, "choiceCount": 4, "choicePresentation": "printed", "officialPlaybackCount": 2 },
+        { "id": "P3", "label": "イラストの内容一致選択", "questionType": "picture-comprehension", "questionCount": 10, "choiceCount": 3, "choicePresentation": "spoken", "supplementalIllustration": true, "officialPlaybackCount": 2 }
+      ]
+    },
+    "speaking": { "availability": "optional-recorded-test", "durationMinutes": 3, "implementationStatus": "not-started" }
+  }
+}
