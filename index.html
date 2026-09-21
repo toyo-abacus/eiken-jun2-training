@@ -796,6 +796,8 @@ function playG5Current(){
  g5Speech(text,()=>{
    if(st)st.textContent="2回の放送が終了しました。答えを選んでください。";
    const o=document.getElementById("g5lOptions");
+   // 第1部は英文を事前に見せず、2回の放送後に番号ボタンだけを出す。
+   if(part===1&&!o.children.length)renderG5Choices(o,x);
    o.querySelectorAll(".option,.pictureOption").forEach(b=>b.disabled=false);
  },2);
 }
