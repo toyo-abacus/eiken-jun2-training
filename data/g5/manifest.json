@@ -4,6 +4,11 @@
   "label": "5級",
   "officialSpecificationStatus": "confirmed",
   "questionDataStatus": "legacy-reading-audited",
+  "dataFiles": ["data/g5/reading.json"],
+  "contentRoutes": [
+    { "skill": "reading", "part": "P1", "file": "data/g5/reading.json", "expectedQuestionCount": 16, "status": "development-only" },
+    { "skill": "reading", "part": "P2", "file": "data/g5/reading.json", "expectedQuestionCount": 9, "status": "development-only" }
+  ],
   "exam": {
     "reading": {
       "durationMinutes": 25,
