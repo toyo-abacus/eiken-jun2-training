@@ -77,7 +77,31 @@
       return left.questionId.localeCompare(right.questionId);
     });
   }
-  var api = { isWeakQuestion: isWeakQuestion, calculateWeaknessScore: calculateWeaknessScore, selectWeakQuestions: selectWeakQuestions };
+  /* Samples without replacement.  Scores are intentionally only selection weights,
+     never a learner-facing value. */
+  function weightedSample(items, limit, random) {
+    var seen = {};
+    var remaining = Array.isArray(items) ? items.filter(function (item) {
+      if (!item || typeof item.questionId !== "string" || !item.questionId || seen[item.questionId] || !Number.isFinite(item.weaknessScore) || item.weaknessScore <= 0) return false;
+      seen[item.questionId] = true;
+      return true;
+    }).slice() : [];
+    var count = Number.isInteger(limit) && limit > 0 ? Math.min(limit, remaining.length) : remaining.length;
+    var choose = typeof random === "function" ? random : Math.random;
+    var selected = [];
+    while (selected.length < count && remaining.length) {
+      var total = remaining.reduce(function (sum, item) { return sum + item.weaknessScore; }, 0);
+      var point = choose() * total, index = 0;
+      for (; index < remaining.length - 1; index += 1) {
+        point -= remaining[index].weaknessScore;
+        if (point < 0) break;
+      }
+      selected.push(remaining[index].questionId);
+      remaining.splice(index, 1);
+    }
+    return selected;
+  }
+  var api = { isWeakQuestion: isWeakQuestion, calculateWeaknessScore: calculateWeaknessScore, selectWeakQuestions: selectWeakQuestions, weightedSample: weightedSample };
   root.EikenWeaknessSelector = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 }(typeof window !== "undefined" ? window : globalThis));

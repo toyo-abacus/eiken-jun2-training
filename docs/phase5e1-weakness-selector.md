@@ -38,4 +38,6 @@
 
 ## Phase 5E-2
 
-次段階で、このselectorの結果を共通Practice launcherに渡し、重複なしのランダム練習として起動する。そのときもscoreは表示用の点数ではなく優先順位用にのみ使用する。
+共通Practice launcherは技能・Part選択後に「🟠 弱点練習」を表示する。`questionStats`を同じ級・技能・Partで抽出し、現在読み込める問題データに存在する固定IDだけを候補にする。対象0件では開始せず、通常練習へ戻れる案内を表示する。
+
+問題数を選んで開始する時点で、`weightedSample`がscoreを重みとして**非復元抽出**する。高scoreほど選ばれやすいが常に先頭固定にはならず、同じ問題をセッション内に重複させない。scoreは表示も保存もしない。保存するsessionの`mode`だけを`"weakness"`とし、回答は既存の`questionStats`更新経路をそのまま使う。
