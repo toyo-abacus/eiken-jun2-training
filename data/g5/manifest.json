@@ -6,8 +6,26 @@
   "questionDataStatus": "legacy-reading-audited",
   "dataFiles": ["data/g5/reading.json"],
   "contentRoutes": [
-    { "skill": "reading", "part": "P1", "file": "data/g5/reading.json", "expectedQuestionCount": 16, "status": "development-only" },
-    { "skill": "reading", "part": "P2", "file": "data/g5/reading.json", "expectedQuestionCount": 9, "status": "development-only" }
+    {
+      "skill": "reading",
+      "part": "P1",
+      "file": "data/g5/reading.json",
+      "expectedQuestionCount": 16,
+      "status": "development-only",
+      "practiceAvailable": true,
+      "displayName": "第1部",
+      "description": "短文の語句空所補充"
+    },
+    {
+      "skill": "reading",
+      "part": "P2",
+      "file": "data/g5/reading.json",
+      "expectedQuestionCount": 9,
+      "status": "development-only",
+      "practiceAvailable": false,
+      "displayName": "第2部",
+      "description": "会話文の文空所補充"
+    }
   ],
   "exam": {
     "reading": {

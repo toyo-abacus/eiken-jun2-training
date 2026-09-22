@@ -305,7 +305,7 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 </div>
 <button class="btn" onclick="startG5Reading()">リーディングを練習</button>
 <button class="btn" onclick="startG5ReadingP1()">第1部を練習（新データ・試験導入）</button>
-<button class="btn" onclick="startSharedPracticeG5ReadingP1()" style="background:#315a9b">🧪 共通エンジン試験版：Reading 第1部</button>
+<button class="btn" onclick="startSharedPracticeLauncherG5()" style="background:#315a9b">🧪 共通エンジン試験版：Part別練習</button>
 <button class="btn" onclick="startG5Listening()">リスニングを練習</button>
 <button class="btn" onclick="openSec('g5actualAudio')" style="background:#315a9b">🎧 2026年度第1回・実際の5級音声を聞く</button>
 <button class="btn" onclick="showG5Review()" style="background:#687386">🔁 間違えた問題・復習</button>
@@ -383,8 +383,22 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 </div>
 </section>
 
-<section id="sharedPractice" class="section">
+<section id="sharedPracticeLauncher" class="section">
 <button class="back" onclick="openSec('g5menu')">← 5級メニュー</button>
+<div class="card">
+<span class="badge">共通エンジン試験版</span>
+<p class="muted">開発確認用です。今回の回答は保存されません。</p>
+<h2 id="sharedLauncherTitle">練習内容を選ぶ</h2>
+<div id="sharedLauncherSkills" class="options"></div>
+<div id="sharedLauncherParts" class="options"></div>
+<div id="sharedLauncherCounts" class="options"></div>
+<p id="sharedLauncherMessage" class="muted"></p>
+<button id="sharedLauncherStart" class="btn" onclick="startSharedPracticeFromLauncher()" disabled>練習開始</button>
+</div>
+</section>
+
+<section id="sharedPractice" class="section">
+<button class="back" onclick="backToSharedPracticeLauncher()">← 練習内容を選ぶ</button>
 <div class="card">
 <span class="badge">共通エンジン試験版</span>
 <p class="muted">開発確認用です。今回の回答は保存されません。</p>
@@ -396,7 +410,7 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 <div id="sharedPracticeFeedback" class="ex"></div>
 <p id="sharedPracticeDebug" class="muted"></p>
 <button id="sharedPracticeNext" class="btn next" onclick="nextSharedPractice()">次へ</button>
-<div id="sharedPracticeResult" class="result"><hr><div id="sharedPracticeFinal" class="score"></div><p class="muted">この試験版は学習記録を保存しません。</p><button class="btn" onclick="openSec('g5menu')">5級メニューへ戻る</button></div>
+<div id="sharedPracticeResult" class="result"><hr><div id="sharedPracticeFinal" class="score"></div><p class="muted">この試験版は学習記録を保存しません。</p><button class="btn" onclick="backToSharedPracticeLauncher()">練習内容を選ぶ</button></div>
 </div>
 </section>
 

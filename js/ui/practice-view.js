@@ -2,8 +2,13 @@
 (function (root) {
   "use strict";
   var state = { session: null, request: null };
+  var launcher = { gradeId: null, development: false, data: null, skill: null, route: null, questionLimit: null };
   function element(id) { return document.getElementById(id); }
   function setText(id, value) { var target = element(id); if (target) target.textContent = value; }
+  function skillLabel(skill) {
+    var labels = { reading: "リーディング", listening: "リスニング", writing: "ライティング", speaking: "スピーキング", vocabulary: "語彙・熟語" };
+    return labels[skill] || skill;
+  }
   function reset() {
     element("sharedPracticeOptions").innerHTML = "";
     element("sharedPracticeFeedback").className = "ex";
@@ -16,6 +21,72 @@
     setText("sharedPracticeDebug", "開発情報: " + (result.code || "unknown-error"));
     element("sharedPracticeFeedback").className = "ex show";
     element("sharedPracticeFeedback").textContent = "既存の5級リーディング練習はそのまま使えます。";
+  }
+  function clearLauncherOptions() {
+    element("sharedLauncherSkills").innerHTML = "";
+    element("sharedLauncherParts").innerHTML = "";
+    element("sharedLauncherCounts").innerHTML = "";
+    element("sharedLauncherStart").disabled = true;
+  }
+  function launcherButton(text, active, onClick) {
+    var button = document.createElement("button");
+    button.className = "option";
+    button.type = "button";
+    button.textContent = text;
+    if (active) button.style.background = "#315a9b";
+    button.addEventListener("click", onClick);
+    return button;
+  }
+  function renderLauncher() {
+    var routes = launcher.data.routes;
+    var skills = routes.map(function (route) { return route.skill; }).filter(function (skill, index, list) { return list.indexOf(skill) === index; });
+    setText("sharedLauncherTitle", (launcher.data.grade.label || launcher.gradeId.toUpperCase()) + "：練習内容を選ぶ");
+    var skillContainer = element("sharedLauncherSkills");
+    skillContainer.innerHTML = "";
+    skills.forEach(function (skill) {
+      skillContainer.appendChild(launcherButton(skillLabel(skill), launcher.skill === skill, function () {
+        launcher.skill = skill; launcher.route = null; launcher.questionLimit = null; renderLauncher();
+      }));
+    });
+    var partContainer = element("sharedLauncherParts");
+    partContainer.innerHTML = "";
+    var countContainer = element("sharedLauncherCounts");
+    countContainer.innerHTML = "";
+    var start = element("sharedLauncherStart");
+    start.disabled = true;
+    if (!launcher.skill) { setText("sharedLauncherMessage", "まず技能を選んでください。"); return; }
+    var parts = routes.filter(function (route) { return route.skill === launcher.skill; });
+    parts.forEach(function (route) {
+      var label = route.displayName + (route.description ? "：" + route.description : "") + "（" + route.questionCount + "問）";
+      partContainer.appendChild(launcherButton(label, launcher.route && launcher.route.part === route.part, function () {
+        launcher.route = route; launcher.questionLimit = null; renderLauncher();
+      }));
+    });
+    if (!launcher.route) { setText("sharedLauncherMessage", "次にPartを選んでください。"); return; }
+    root.EikenPracticeEngine.getQuestionLimitOptions(launcher.route.questionCount).forEach(function (option) {
+      countContainer.appendChild(launcherButton(option.label, launcher.questionLimit === option.value, function () {
+        launcher.questionLimit = option.value; renderLauncher();
+      }));
+    });
+    if (!launcher.questionLimit) { setText("sharedLauncherMessage", "問題数を選んでください。"); return; }
+    setText("sharedLauncherMessage", skillLabel(launcher.route.skill) + "・" + launcher.route.displayName + "を" + launcher.questionLimit + "問練習します。今回の回答は保存されません。");
+    start.disabled = false;
+  }
+  function showLauncherError(result) {
+    clearLauncherOptions();
+    setText("sharedLauncherTitle", "練習内容を読み込めませんでした");
+    setText("sharedLauncherMessage", "通信状態または開発用データの設定を確認してください。（開発情報: " + (result.code || "unknown-error") + "）");
+  }
+  async function openLauncher(request, development) {
+    launcher = { gradeId: request.gradeId, development: development === true, data: null, skill: null, route: null, questionLimit: null };
+    root.openSec("sharedPracticeLauncher");
+    clearLauncherOptions();
+    setText("sharedLauncherTitle", "練習内容を読み込み中…");
+    setText("sharedLauncherMessage", "利用可能な技能・Partを確認しています。");
+    var result = await root.EikenPracticeEngine.discoverPracticeRoutes(request.gradeId, { allowDisabled: launcher.development });
+    if (!result.ok) return showLauncherError(result);
+    launcher.data = result;
+    renderLauncher();
   }
   function render() {
     var item = state.session.getCurrent(), progress = state.session.getState();
@@ -63,15 +134,25 @@
     element("sharedPracticeResult").style.display = "block";
   }
   function next() { if (!state.session) return; var result = state.session.next(); if (result.ok) { if (result.complete) showResult(); else render(); } }
-  async function start(request, development) {
+  async function start(request, development, questionLimit) {
     state.session = null; state.request = request; reset();
     root.openSec("sharedPractice");
     setText("sharedPracticeTitle", "共通エンジン試験版を読み込み中…"); setText("sharedPracticeCount", ""); setText("sharedPracticeScore", ""); setText("sharedPracticeQuestion", "問題データを読み込んでいます。"); setText("sharedPracticeDebug", "");
-    var result = await root.EikenPracticeEngine.loadSession(request, { allowDisabled: development === true });
+    var result = await root.EikenPracticeEngine.loadSession(request, { allowDisabled: development === true, questionLimit: questionLimit });
     if (!result.ok) return showError(result);
     state.session = result.session; render();
   }
   root.startSharedPractice = start;
   root.startSharedPracticeG5ReadingP1 = function () { return start({ gradeId: "G5", skill: "reading", part: "P1" }, true); };
+  root.startSharedPracticeLauncherG5 = function () { return openLauncher({ gradeId: "G5" }, true); };
+  root.startSharedPracticeFromLauncher = function () {
+    if (!launcher.route || !launcher.questionLimit) return;
+    return start({ gradeId: launcher.gradeId, skill: launcher.route.skill, part: launcher.route.part }, launcher.development, launcher.questionLimit);
+  };
+  root.backToSharedPracticeLauncher = function () {
+    if (!launcher.data) return root.openSec("g5menu");
+    root.openSec("sharedPracticeLauncher");
+    renderLauncher();
+  };
   root.nextSharedPractice = next;
 }(window));
