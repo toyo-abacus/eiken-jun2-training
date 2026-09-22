@@ -29,7 +29,13 @@
     }
     return { mode: "normal", targetCount: 0, reason: "no_review_targets", questionIds: [] };
   }
-  var api = { selectRecommendedPractice: selectRecommendedPractice };
+  function getRecommendationPresentation(recommendation) {
+    var value = isObject(recommendation) ? recommendation : {};
+    if (value.mode === "review") return { mode: "review", title: "⭐ 今日のおすすめ", message: "🔴 間違えた問題が" + (Number.isInteger(value.targetCount) ? value.targetCount : 0) + "問あります。まずは復習してみよう！", buttonLabel: "おすすめ練習を始める" };
+    if (value.mode === "weakness") return { mode: "weakness", title: "⭐ 今日のおすすめ", message: "🟠 苦手になっている問題が" + (Number.isInteger(value.targetCount) ? value.targetCount : 0) + "問あります。弱点をもう一度練習してみよう！", buttonLabel: "おすすめ練習を始める" };
+    return { mode: "normal", title: "⭐ 今日のおすすめ", message: "🎉 今は復習する問題はありません。通常練習で新しい問題に挑戦しよう！", buttonLabel: "おすすめ練習を始める" };
+  }
+  var api = { selectRecommendedPractice: selectRecommendedPractice, getRecommendationPresentation: getRecommendationPresentation };
   root.EikenRecommendationSelector = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 }(typeof window !== "undefined" ? window : globalThis));

@@ -2,7 +2,7 @@
 (function (root) {
   "use strict";
   var state = { session: null, request: null, progress: null, progressWarning: "", mode: "practice", masteredQuestionIds: [] };
-  var launcher = { gradeId: null, development: false, data: null, skill: null, route: null, mode: null, questionLimit: null, reviewQuestionIds: null, reviewError: "", weaknessQuestions: null, weaknessError: "" };
+  var launcher = { gradeId: null, development: false, data: null, skill: null, route: null, mode: null, questionLimit: null, reviewQuestionIds: null, reviewError: "", weaknessQuestions: null, weaknessError: "", recommendation: null, recommendationLoading: false };
   function element(id) { return document.getElementById(id); }
   function setText(id, value) { var target = element(id); if (target) target.textContent = value; }
   function skillLabel(skill) {
@@ -77,6 +77,18 @@
     element("sharedLauncherModes").innerHTML = "";
     element("sharedLauncherCounts").innerHTML = "";
     element("sharedLauncherStart").disabled = true;
+    renderRecommendation(null, false);
+  }
+  function renderRecommendation(recommendation, loading) {
+    var card = element("sharedRecommendation");
+    if (!card) return;
+    if (!launcher.route) { card.style.display = "none"; return; }
+    card.style.display = "block";
+    var presentation = root.EikenRecommendationSelector && typeof root.EikenRecommendationSelector.getRecommendationPresentation === "function" ? root.EikenRecommendationSelector.getRecommendationPresentation(recommendation) : { title: "⭐ 今日のおすすめ", message: "通常練習で新しい問題に挑戦しよう！", buttonLabel: "おすすめ練習を始める" };
+    setText("sharedRecommendationTitle", presentation.title);
+    setText("sharedRecommendationMessage", loading ? "おすすめを確認しています…" : presentation.message);
+    var button = element("sharedRecommendationStart");
+    if (button) { button.textContent = presentation.buttonLabel; button.disabled = loading; }
   }
   function launcherButton(text, active, onClick) {
     var button = document.createElement("button");
@@ -95,7 +107,7 @@
     skillContainer.innerHTML = "";
     skills.forEach(function (skill) {
       skillContainer.appendChild(launcherButton(skillLabel(skill), launcher.skill === skill, function () {
-        launcher.skill = skill; launcher.route = null; launcher.mode = null; launcher.questionLimit = null; launcher.reviewQuestionIds = null; launcher.reviewError = ""; launcher.weaknessQuestions = null; launcher.weaknessError = ""; renderLauncher();
+        launcher.skill = skill; launcher.route = null; launcher.mode = null; launcher.questionLimit = null; launcher.reviewQuestionIds = null; launcher.reviewError = ""; launcher.weaknessQuestions = null; launcher.weaknessError = ""; launcher.recommendation = null; launcher.recommendationLoading = false; renderLauncher();
       }));
     });
     var partContainer = element("sharedLauncherParts");
@@ -109,10 +121,11 @@
     parts.forEach(function (route) {
       var label = route.displayName + (route.description ? "：" + route.description : "") + "（" + route.questionCount + "問）";
       partContainer.appendChild(launcherButton(label, launcher.route && launcher.route.part === route.part, function () {
-        launcher.route = route; launcher.mode = null; launcher.questionLimit = null; launcher.reviewQuestionIds = null; launcher.reviewError = ""; launcher.weaknessQuestions = null; launcher.weaknessError = ""; renderLauncher();
+        launcher.route = route; launcher.mode = null; launcher.questionLimit = null; launcher.reviewQuestionIds = null; launcher.reviewError = ""; launcher.weaknessQuestions = null; launcher.weaknessError = ""; launcher.recommendation = null; launcher.recommendationLoading = true; renderLauncher(); refreshRecommendation(route);
       }));
     });
     if (!launcher.route) { setText("sharedLauncherMessage", "次にPartを選んでください。"); return; }
+    renderRecommendation(launcher.recommendation, launcher.recommendationLoading);
     var modeContainer = element("sharedLauncherModes");
     modeContainer.innerHTML = "";
     modeContainer.appendChild(launcherButton("通常練習", launcher.mode === "practice", function () { launcher.mode = "practice"; launcher.questionLimit = null; renderLauncher(); }));
@@ -157,13 +170,25 @@
     launcher.weaknessQuestions = root.EikenWeaknessSelector.selectWeakQuestions(store.getSnapshot().questionStats, { gradeId: questions.gradeId, skill: questions.skill, part: questions.part }).filter(function (item) { return availableIds[item.questionId] === true; });
     renderLauncher();
   }
+  async function refreshRecommendation(route) {
+    if (!root.EikenRecommendationSelector || !root.EikenProgressStore || !root.EikenDataLoader) {
+      launcher.recommendation = { mode: "normal", targetCount: 0, reason: "recommendation_unavailable" }; launcher.recommendationLoading = false; return renderLauncher();
+    }
+    try {
+      var store = root.EikenProgressStore.createProgressStore(), loaded = store.load();
+      var questions = loaded.ok ? await root.EikenDataLoader.loadQuestions({ gradeId: launcher.gradeId, skill: route.skill, part: route.part }, { allowDisabled: launcher.development }) : null;
+      if (launcher.route !== route) return;
+      launcher.recommendation = loaded.ok && questions && questions.ok ? root.EikenRecommendationSelector.selectRecommendedPractice(store.getSnapshot().questionStats, questions.questions, { gradeId: questions.gradeId, skill: questions.skill, part: questions.part }) : { mode: "normal", targetCount: 0, reason: "recommendation_unavailable" };
+    } catch (error) { launcher.recommendation = { mode: "normal", targetCount: 0, reason: "recommendation_unavailable" }; }
+    launcher.recommendationLoading = false; renderLauncher();
+  }
   function showLauncherError(result) {
     clearLauncherOptions();
     setText("sharedLauncherTitle", "練習内容を読み込めませんでした");
     setText("sharedLauncherMessage", "通信状態または開発用データの設定を確認してください。（開発情報: " + (result.code || "unknown-error") + "）");
   }
   async function openLauncher(request, development) {
-    launcher = { gradeId: request.gradeId, development: development === true, data: null, skill: null, route: null, mode: null, questionLimit: null, reviewQuestionIds: null, reviewError: "", weaknessQuestions: null, weaknessError: "" };
+    launcher = { gradeId: request.gradeId, development: development === true, data: null, skill: null, route: null, mode: null, questionLimit: null, reviewQuestionIds: null, reviewError: "", weaknessQuestions: null, weaknessError: "", recommendation: null, recommendationLoading: false };
     root.openSec("sharedPracticeLauncher");
     clearLauncherOptions();
     setText("sharedLauncherTitle", "練習内容を読み込み中…");
@@ -240,6 +265,13 @@
     if (!launcher.route || !launcher.questionLimit) return;
     var questionIds = launcher.mode === "review" ? launcher.reviewQuestionIds : launcher.mode === "weakness" ? root.EikenWeaknessSelector.weightedSample(launcher.weaknessQuestions, launcher.questionLimit) : null;
     return start({ gradeId: launcher.gradeId, skill: launcher.route.skill, part: launcher.route.part }, launcher.development, launcher.questionLimit, launcher.mode, questionIds);
+  };
+  root.startRecommendedPracticeFromLauncher = function () {
+    if (!launcher.route) return;
+    var mode = launcher.recommendation && launcher.recommendation.mode;
+    if (mode === "review") return selectReviewMode();
+    if (mode === "weakness") return selectWeaknessMode();
+    launcher.mode = "practice"; launcher.questionLimit = null; renderLauncher();
   };
   root.backToSharedPracticeLauncher = function () {
     if (!launcher.data) return root.openSec("g5menu");
