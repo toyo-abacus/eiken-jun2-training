@@ -305,6 +305,7 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 </div>
 <button class="btn" onclick="startG5Reading()">リーディングを練習</button>
 <button class="btn" onclick="startG5ReadingP1()">第1部を練習（新データ・試験導入）</button>
+<button class="btn" onclick="startSharedPracticeG5ReadingP1()" style="background:#315a9b">🧪 共通エンジン試験版：Reading 第1部</button>
 <button class="btn" onclick="startG5Listening()">リスニングを練習</button>
 <button class="btn" onclick="openSec('g5actualAudio')" style="background:#315a9b">🎧 2026年度第1回・実際の5級音声を聞く</button>
 <button class="btn" onclick="showG5Review()" style="background:#687386">🔁 間違えた問題・復習</button>
@@ -379,6 +380,23 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 <div id="g5rOptions" class="options"></div>
 <div id="g5rEx" class="ex"></div>
 <button id="g5rNext" class="btn next" style="display:none" onclick="nextG5ReadingDispatcher()">次の問題</button>
+</div>
+</section>
+
+<section id="sharedPractice" class="section">
+<button class="back" onclick="openSec('g5menu')">← 5級メニュー</button>
+<div class="card">
+<span class="badge">共通エンジン試験版</span>
+<p class="muted">開発確認用です。今回の回答は保存されません。</p>
+<div class="meta"><span id="sharedPracticeCount"></span><span id="sharedPracticeScore"></span></div>
+<div class="progress"><div id="sharedPracticeBar" class="bar"></div></div>
+<h2 id="sharedPracticeTitle">共通エンジン試験版</h2>
+<div id="sharedPracticeQuestion" class="question"></div>
+<div id="sharedPracticeOptions" class="options"></div>
+<div id="sharedPracticeFeedback" class="ex"></div>
+<p id="sharedPracticeDebug" class="muted"></p>
+<button id="sharedPracticeNext" class="btn next" onclick="nextSharedPractice()">次へ</button>
+<div id="sharedPracticeResult" class="result"><hr><div id="sharedPracticeFinal" class="score"></div><p class="muted">この試験版は学習記録を保存しません。</p><button class="btn" onclick="openSec('g5menu')">5級メニューへ戻る</button></div>
 </div>
 </section>
 
@@ -945,6 +963,9 @@ function nextReview(){
  }
 }
 </script>
+<script src="js/core/data-loader.js"></script>
+<script src="js/core/practice-engine.js"></script>
+<script src="js/ui/practice-view.js"></script>
 <script src="js/g5-reading-p1.js"></script>
 </body>
 </html>
