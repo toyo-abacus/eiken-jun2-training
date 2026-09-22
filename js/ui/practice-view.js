@@ -179,6 +179,7 @@
     element("sharedPracticeNext").style.display = "none";
     setText("sharedPracticeFinal", progress.score + " / " + progress.total + " 問正解（" + percent + "%）");
     if (state.progressWarning) setText("sharedPracticeStorageWarning", state.progressWarning);
+    setText("sharedPracticeResultStorageStatus", state.progress && state.progress.completed && !state.progressWarning ? "今回の学習記録をこの端末に保存しました。" : "");
     element("sharedPracticeResult").style.display = "block";
   }
   function next() { if (!state.session) return; var result = state.session.next(); if (result.ok) { if (result.complete) showResult(); else render(); } }
