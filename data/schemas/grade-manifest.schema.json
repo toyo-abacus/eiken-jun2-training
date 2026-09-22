@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "title": "Eiken grade manifest", "type": "object",
+  "properties": {
+    "schemaVersion": { "enum": ["1.0", "1.1"] }, "gradeId": { "enum": ["g5", "g4", "g3", "p2", "p2plus", "g2", "p1", "g1"] }, "grade": { "enum": ["g5", "g4", "g3", "p2", "p2plus", "g2", "p1", "g1"] }, "displayName": { "type": "string" }, "label": { "type": "string" }, "contentStatus": { "type": "string" },
+    "skills": { "type": "array", "items": { "enum": ["reading", "listening", "writing", "speaking", "vocabulary"] } }, "practiceMode": { "type": "object" }, "officialStyleMode": { "type": "object" }, "parts": { "type": "array", "items": { "type": "object" } }, "questionCounts": { "type": "object" }, "timeLimits": { "type": "object" }, "listeningRules": { "type": "object" }, "assetRequirements": { "type": "object" }, "dataFiles": { "type": "array", "items": { "type": "string" } }, "exam": { "type": "object" }
+  },
+  "anyOf": [{ "required": ["schemaVersion", "gradeId", "displayName", "contentStatus"] }, { "required": ["schemaVersion", "grade", "label", "exam"] }]
+}

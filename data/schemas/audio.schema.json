@@ -1,0 +1,5 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "title": "Audio asset metadata", "type": "object",
+  "required": ["audioId", "grade", "skill", "part", "file", "status", "playbackCount", "sourceType"],
+  "properties": { "audioId": { "type": "string", "pattern": "^[A-Z0-9-]+$" }, "grade": { "enum": ["g5", "g4", "g3", "p2", "p2plus", "g2", "p1", "g1"] }, "skill": { "enum": ["listening", "speaking"] }, "part": { "pattern": "^P[0-9]+$" }, "file": { "type": ["string", "null"] }, "status": { "enum": ["pending", "available", "reviewed", "retired"] }, "playbackCount": { "type": "integer", "minimum": 1 }, "sourceType": { "enum": ["original", "official-reference-analysis", "legacy", "unknown"] } }
+}

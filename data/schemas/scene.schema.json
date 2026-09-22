@@ -1,0 +1,5 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "title": "Shared scene asset", "type": "object",
+  "required": ["sceneId", "category", "location", "characters", "objects", "allowedUses", "forbiddenUses", "answerLeakNotes", "file", "status"],
+  "properties": { "sceneId": { "type": "string", "pattern": "^scene-[a-z0-9-]+$" }, "category": { "type": "string" }, "location": { "type": "string" }, "characters": { "type": "array", "items": { "type": "string" } }, "objects": { "type": "array", "items": { "type": "string" } }, "allowedUses": { "type": "array", "items": { "type": "string" } }, "forbiddenUses": { "type": "array", "items": { "type": "string" } }, "answerLeakNotes": { "type": "string" }, "file": { "type": ["string", "null"] }, "status": { "enum": ["planned", "pending", "reviewed", "available", "retired"] } }
+}

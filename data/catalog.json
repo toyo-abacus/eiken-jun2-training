@@ -1,14 +1,15 @@
 {
-  "schemaVersion": "1.0",
-  "updatedAt": "2026-09-21",
+  "schemaVersion": "1.1",
+  "updatedAt": "2026-09-22",
+  "foundationStatus": "phase-1-not-connected-to-ui",
   "grades": [
-    { "id": "g5", "label": "5級", "officialSpecificationStatus": "confirmed", "questionDataStatus": "legacy-reading-audited", "learningImplementationStatus": "reading-p1-pilot", "examModeStatus": "not-started" },
-    { "id": "g4", "label": "4級", "officialSpecificationStatus": "confirmed", "questionDataStatus": "awaiting-materials", "learningImplementationStatus": "not-started", "examModeStatus": "not-started" },
-    { "id": "g3", "label": "3級", "officialSpecificationStatus": "confirmed", "questionDataStatus": "awaiting-materials", "learningImplementationStatus": "not-started", "examModeStatus": "not-started" },
-    { "id": "p2", "label": "準2級", "officialSpecificationStatus": "confirmed", "questionDataStatus": "legacy-inline-data-present", "learningImplementationStatus": "legacy-implementation-present", "examModeStatus": "not-started" },
-    { "id": "p2plus", "label": "準2級プラス", "officialSpecificationStatus": "confirmed", "questionDataStatus": "awaiting-materials", "learningImplementationStatus": "not-started", "examModeStatus": "not-started" },
-    { "id": "g2", "label": "2級", "officialSpecificationStatus": "confirmed", "questionDataStatus": "awaiting-materials", "learningImplementationStatus": "not-started", "examModeStatus": "not-started" },
-    { "id": "p1", "label": "準1級", "officialSpecificationStatus": "confirmed", "questionDataStatus": "awaiting-materials", "learningImplementationStatus": "not-started", "examModeStatus": "not-started" },
-    { "id": "g1", "label": "1級", "officialSpecificationStatus": "confirmed", "questionDataStatus": "awaiting-materials", "learningImplementationStatus": "not-started", "examModeStatus": "not-started" }
+    {"id":"g5","gradeId":"g5","idPrefix":"G5","label":"\u0035\u7d1a","displayName":"\u0035\u7d1a","enabled":false,"contentStatus":"pilot-data-present","manifest":"data/g5/manifest.json","officialSpecificationStatus":"confirmed","questionDataStatus":"legacy-reading-audited","learningImplementationStatus":"reading-p1-pilot","examModeStatus":"not-started"},
+    {"id":"g4","gradeId":"g4","idPrefix":"G4","label":"\u0034\u7d1a","displayName":"\u0034\u7d1a","enabled":false,"contentStatus":"not-started","manifest":null,"officialSpecificationStatus":"confirmed","questionDataStatus":"awaiting-materials","learningImplementationStatus":"not-started","examModeStatus":"not-started"},
+    {"id":"g3","gradeId":"g3","idPrefix":"G3","label":"\u0033\u7d1a","displayName":"\u0033\u7d1a","enabled":false,"contentStatus":"not-started","manifest":null,"officialSpecificationStatus":"confirmed","questionDataStatus":"awaiting-materials","learningImplementationStatus":"not-started","examModeStatus":"not-started"},
+    {"id":"p2","gradeId":"p2","idPrefix":"GP2","label":"\u6e96\u0032\u7d1a","displayName":"\u6e96\u0032\u7d1a","enabled":false,"contentStatus":"legacy-inline-only","manifest":null,"officialSpecificationStatus":"confirmed","questionDataStatus":"legacy-inline-data-present","learningImplementationStatus":"legacy-implementation-present","examModeStatus":"not-started"},
+    {"id":"p2plus","gradeId":"p2plus","idPrefix":"GP2PLUS","label":"\u6e96\u0032\u7d1a\u30d7\u30e9\u30b9","displayName":"\u6e96\u0032\u7d1a\u30d7\u30e9\u30b9","enabled":false,"contentStatus":"not-started","manifest":null,"officialSpecificationStatus":"confirmed","questionDataStatus":"awaiting-materials","learningImplementationStatus":"not-started","examModeStatus":"not-started"},
+    {"id":"g2","gradeId":"g2","idPrefix":"G2","label":"\u0032\u7d1a","displayName":"\u0032\u7d1a","enabled":false,"contentStatus":"not-started","manifest":null,"officialSpecificationStatus":"confirmed","questionDataStatus":"awaiting-materials","learningImplementationStatus":"not-started","examModeStatus":"not-started"},
+    {"id":"p1","gradeId":"p1","idPrefix":"GP1","label":"\u6e96\u0031\u7d1a","displayName":"\u6e96\u0031\u7d1a","enabled":false,"contentStatus":"not-started","manifest":null,"officialSpecificationStatus":"confirmed","questionDataStatus":"awaiting-materials","learningImplementationStatus":"not-started","examModeStatus":"not-started"},
+    {"id":"g1","gradeId":"g1","idPrefix":"G1","label":"\u0031\u7d1a","displayName":"\u0031\u7d1a","enabled":false,"contentStatus":"not-started","manifest":null,"officialSpecificationStatus":"confirmed","questionDataStatus":"awaiting-materials","learningImplementationStatus":"not-started","examModeStatus":"not-started"}
   ]
 }
