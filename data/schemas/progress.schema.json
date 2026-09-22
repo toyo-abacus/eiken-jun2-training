@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Eiken Training Progress schemaVersion 2",
+  "type": "object",
+  "required": ["version", "schemaVersion", "questionStats", "sessions", "questions"],
+  "properties": {
+    "version": { "const": 2 },
+    "schemaVersion": { "const": 2 },
+    "questionStats": { "type": "object", "additionalProperties": { "$ref": "#/$defs/questionStat" } },
+    "sessions": { "type": "array", "maxItems": 200, "items": { "$ref": "#/$defs/session" } },
+    "questions": { "type": "object", "description": "version 2 compatibility mirror for the existing G5 P1 pilot", "additionalProperties": { "$ref": "#/$defs/legacyQuestionStat" } }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "questionStat": {
+      "type": "object",
+      "required": ["attempts", "correctCount", "wrongCount", "currentStreak", "bestStreak", "lastAttemptAt", "lastCorrectAt", "lastWrongAt"],
+      "properties": {
+        "gradeId": { "type": ["string", "null"] }, "skill": { "type": ["string", "null"] }, "part": { "type": ["string", "null"] },
+        "attempts": { "type": "integer", "minimum": 0 }, "correctCount": { "type": "integer", "minimum": 0 }, "wrongCount": { "type": "integer", "minimum": 0 },
+        "currentStreak": { "type": "integer", "minimum": 0 }, "bestStreak": { "type": "integer", "minimum": 0 },
+        "lastAttemptAt": { "type": ["string", "null"], "format": "date-time" }, "lastCorrectAt": { "type": ["string", "null"], "format": "date-time" }, "lastWrongAt": { "type": ["string", "null"], "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "legacyQuestionStat": { "type": "object", "required": ["attempts", "correctCount", "wrongCount", "currentStreak", "lastAttemptAt", "lastCorrectAt", "lastWrongAt"], "additionalProperties": true },
+    "session": {
+      "type": "object",
+      "required": ["sessionId", "startedAt", "completedAt", "gradeId", "skill", "part", "mode", "questionCount", "correctCount", "wrongCount", "accuracy", "status", "questionIds", "wrongQuestionIds"],
+      "properties": {
+        "sessionId": { "type": "string", "minLength": 1 }, "startedAt": { "type": "string", "format": "date-time" }, "completedAt": { "type": ["string", "null"], "format": "date-time" },
+        "gradeId": { "type": "string" }, "skill": { "type": "string" }, "part": { "type": "string" }, "mode": { "enum": ["practice", "wrong-only", "weakness", "official-style", "mock-exam"] },
+        "questionCount": { "type": "integer", "minimum": 0 }, "correctCount": { "type": "integer", "minimum": 0 }, "wrongCount": { "type": "integer", "minimum": 0 }, "accuracy": { "type": "integer", "minimum": 0, "maximum": 100 }, "status": { "enum": ["in-progress", "completed"] },
+        "questionIds": { "type": "array", "maxItems": 100, "items": { "type": "string" } }, "wrongQuestionIds": { "type": "array", "maxItems": 100, "items": { "type": "string" } }
+      }, "additionalProperties": false
+    }
+  }
+}
