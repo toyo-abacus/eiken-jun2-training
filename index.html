@@ -392,6 +392,7 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 <h2 id="sharedLauncherTitle">練習内容を選ぶ</h2>
 <div id="sharedLauncherSkills" class="options"></div>
 <div id="sharedLauncherParts" class="options"></div>
+<div id="sharedLauncherModes" class="options"></div>
 <div id="sharedLauncherCounts" class="options"></div>
 <p id="sharedLauncherMessage" class="muted"></p>
 <button id="sharedLauncherStart" class="btn" onclick="startSharedPracticeFromLauncher()" disabled>練習開始</button>
@@ -413,7 +414,7 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 <p id="sharedPracticeStorageWarning" class="muted"></p>
 <p id="sharedPracticeDebug" class="muted"></p>
 <button id="sharedPracticeNext" class="btn next" onclick="nextSharedPractice()">次へ</button>
-<div id="sharedPracticeResult" class="result"><hr><div id="sharedPracticeFinal" class="score"></div><p id="sharedPracticeResultStorageStatus" class="muted"></p><button class="btn" onclick="backToSharedPracticeLauncher()">練習内容を選ぶ</button></div>
+<div id="sharedPracticeResult" class="result"><hr><div id="sharedPracticeFinal" class="score"></div><p id="sharedPracticeReviewResult" class="muted"></p><p id="sharedPracticeResultStorageStatus" class="muted"></p><button class="btn" onclick="backToSharedPracticeLauncher()">練習内容を選ぶ</button></div>
 </div>
 </section>
 
@@ -995,6 +996,7 @@ function nextReview(){
 <script src="js/core/data-loader.js"></script>
 <script src="js/core/progress-store.js"></script>
 <script src="js/core/progress-summary.js"></script>
+<script src="js/core/review-selector.js"></script>
 <script src="js/core/practice-engine.js"></script>
 <script src="js/ui/practice-view.js"></script>
 <script src="js/ui/progress-view.js"></script>

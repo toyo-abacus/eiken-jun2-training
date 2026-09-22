@@ -59,8 +59,14 @@
     var result = await root.EikenDataLoader.loadQuestions(request, options);
     if (!result.ok) return result;
     var settings = options || {};
-    if (!validQuestionLimit(settings.questionLimit, result.questions.length)) return { ok: false, code: "invalid-question-limit", message: "Requested question count is not available.", details: { questionLimit: settings.questionLimit, available: result.questions.length } };
-    return { ok: true, grade: result.grade, gradeId: result.gradeId, skill: result.skill, part: result.part, session: createSession(request, result.questions, settings) };
+    var questions = result.questions;
+    if (Array.isArray(settings.questionIds)) {
+      var allowed = {}; settings.questionIds.forEach(function (id) { allowed[id] = true; });
+      questions = questions.filter(function (question) { return allowed[question.id] === true; });
+      if (!questions.length) return { ok: false, code: "question-filter-empty", message: "No requested questions are available." };
+    }
+    if (!validQuestionLimit(settings.questionLimit, questions.length)) return { ok: false, code: "invalid-question-limit", message: "Requested question count is not available.", details: { questionLimit: settings.questionLimit, available: questions.length } };
+    return { ok: true, grade: result.grade, gradeId: result.gradeId, skill: result.skill, part: result.part, session: createSession(request, questions, settings) };
   }
   async function discoverPracticeRoutes(gradeId, options) {
     if (!root.EikenDataLoader) return { ok: false, code: "loader-unavailable", message: "Data loader is unavailable." };

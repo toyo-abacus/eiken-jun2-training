@@ -50,7 +50,7 @@
       var item = document.createElement("div"), date = document.createElement("b"), details = document.createElement("div"), result = document.createElement("div");
       item.className = "recent-session";
       date.textContent = formatDate(session.completedAt);
-      details.textContent = labels.grade(session.gradeId) + "・" + labels.skill(session.skill) + "・" + labels.part(session.gradeId, session.skill, session.part);
+      details.textContent = labels.grade(session.gradeId) + "・" + labels.skill(session.skill) + "・" + labels.part(session.gradeId, session.skill, session.part) + (session.mode === "review" ? "・復習" : "");
       result.textContent = session.questionCount + "問中" + session.correctCount + "問正解　" + session.accuracy + "%";
       item.appendChild(date); item.appendChild(details); item.appendChild(result); container.appendChild(item);
     });
