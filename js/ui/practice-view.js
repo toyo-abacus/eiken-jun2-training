@@ -1,7 +1,7 @@
 /* Shared Practice UI. The development entry below is the only caller that permits disabled content. */
 (function (root) {
   "use strict";
-  var state = { session: null, request: null };
+  var state = { session: null, request: null, progress: null, progressWarning: "" };
   var launcher = { gradeId: null, development: false, data: null, skill: null, route: null, questionLimit: null };
   function element(id) { return document.getElementById(id); }
   function setText(id, value) { var target = element(id); if (target) target.textContent = value; }
@@ -14,6 +14,50 @@
     element("sharedPracticeFeedback").className = "ex";
     element("sharedPracticeNext").style.display = "none";
     element("sharedPracticeResult").style.display = "none";
+    setText("sharedPracticeStorageWarning", "");
+  }
+  function setProgressWarning(value) {
+    state.progressWarning = value || "";
+    setText("sharedPracticeStorageWarning", state.progressWarning);
+  }
+  function noteStorageResult(result) {
+    if (!result || result.saved === true) return;
+    setProgressWarning("学習記録を保存できませんでした。練習はそのまま続けられます。");
+  }
+  function beginProgress(result) {
+    state.progress = null;
+    if (!root.EikenProgressStore || !result || !result.session) return;
+    try {
+      var store = root.EikenProgressStore.createProgressStore();
+      var session = result.session;
+      var started = store.startSession({
+        gradeId: result.gradeId, skill: result.skill, part: result.part, mode: "practice",
+        questionCount: session.getState().total, questionIds: session.getQuestionIds()
+      });
+      if (!started.ok) { noteStorageResult(started); return; }
+      state.progress = { store: store, sessionId: started.value.sessionId, gradeId: result.gradeId, skill: result.skill, part: result.part, questionIds: session.getQuestionIds(), wrongQuestionIds: [], completed: false };
+      noteStorageResult(started);
+    } catch (error) { setProgressWarning("学習記録を保存できませんでした。練習はそのまま続けられます。"); }
+  }
+  function recordProgressAnswer(question, isCorrect) {
+    if (!state.progress) return;
+    try {
+      var saved = state.progress.store.recordAnswer({ questionId: question.id, gradeId: state.progress.gradeId, skill: state.progress.skill, part: state.progress.part, isCorrect: isCorrect });
+      if (!isCorrect && state.progress.wrongQuestionIds.indexOf(question.id) === -1) state.progress.wrongQuestionIds.push(question.id);
+      noteStorageResult(saved);
+    } catch (error) { setProgressWarning("学習記録を保存できませんでした。練習はそのまま続けられます。"); }
+  }
+  function completeProgressSession() {
+    if (!state.progress || state.progress.completed) return;
+    state.progress.completed = true;
+    try {
+      var progress = state.session.getState();
+      var saved = state.progress.store.completeSession({
+        sessionId: state.progress.sessionId, questionCount: progress.total, correctCount: progress.score,
+        questionIds: state.progress.questionIds, wrongQuestionIds: state.progress.wrongQuestionIds
+      });
+      noteStorageResult(saved);
+    } catch (error) { setProgressWarning("学習記録を保存できませんでした。練習はそのまま続けられます。"); }
   }
   function showError(result) {
     setText("sharedPracticeTitle", "問題を読み込めませんでした");
@@ -69,7 +113,7 @@
       }));
     });
     if (!launcher.questionLimit) { setText("sharedLauncherMessage", "問題数を選んでください。"); return; }
-    setText("sharedLauncherMessage", skillLabel(launcher.route.skill) + "・" + launcher.route.displayName + "を" + launcher.questionLimit + "問練習します。今回の回答は保存されません。");
+    setText("sharedLauncherMessage", skillLabel(launcher.route.skill) + "・" + launcher.route.displayName + "を" + launcher.questionLimit + "問練習します。学習記録はこの端末に保存されます。");
     start.disabled = false;
   }
   function showLauncherError(result) {
@@ -92,6 +136,7 @@
     var item = state.session.getCurrent(), progress = state.session.getState();
     if (!item) return showResult();
     reset();
+    if (state.progressWarning) setText("sharedPracticeStorageWarning", state.progressWarning);
     setText("sharedPracticeTitle", state.request.gradeId.toUpperCase() + " / " + state.request.skill + " / " + state.request.part + "（試験版）");
     setText("sharedPracticeCount", (progress.index + 1) + " / " + progress.total);
     setText("sharedPracticeScore", "正解 " + progress.score);
@@ -111,6 +156,7 @@
     var result = state.session.answer(choiceId);
     if (!result.ok) return;
     var item = state.session.getCurrent(), correctText = "";
+    recordProgressAnswer(item.question, result.correct);
     document.querySelectorAll("#sharedPracticeOptions .option").forEach(function (button) { button.disabled = true; });
     item.displayChoices.forEach(function (choice, index) {
       var button = element("sharedPracticeOptions").children[index];
@@ -125,22 +171,24 @@
     var next = element("sharedPracticeNext"); next.textContent = state.session.getState().index === state.session.getState().total - 1 ? "結果を見る" : "次へ"; next.style.display = "block";
   }
   function showResult() {
+    completeProgressSession();
     var progress = state.session.getState(), percent = progress.total ? Math.round(progress.score / progress.total * 100) : 0;
     element("sharedPracticeOptions").innerHTML = "";
     setText("sharedPracticeQuestion", "終了しました。おつかれさまでした！");
     element("sharedPracticeFeedback").className = "ex";
     element("sharedPracticeNext").style.display = "none";
     setText("sharedPracticeFinal", progress.score + " / " + progress.total + " 問正解（" + percent + "%）");
+    if (state.progressWarning) setText("sharedPracticeStorageWarning", state.progressWarning);
     element("sharedPracticeResult").style.display = "block";
   }
   function next() { if (!state.session) return; var result = state.session.next(); if (result.ok) { if (result.complete) showResult(); else render(); } }
   async function start(request, development, questionLimit) {
-    state.session = null; state.request = request; reset();
+    state.session = null; state.request = request; state.progress = null; state.progressWarning = ""; reset();
     root.openSec("sharedPractice");
     setText("sharedPracticeTitle", "共通エンジン試験版を読み込み中…"); setText("sharedPracticeCount", ""); setText("sharedPracticeScore", ""); setText("sharedPracticeQuestion", "問題データを読み込んでいます。"); setText("sharedPracticeDebug", "");
     var result = await root.EikenPracticeEngine.loadSession(request, { allowDisabled: development === true, questionLimit: questionLimit });
     if (!result.ok) return showError(result);
-    state.session = result.session; render();
+    state.session = result.session; beginProgress(result); render();
   }
   root.startSharedPractice = start;
   root.startSharedPracticeG5ReadingP1 = function () { return start({ gradeId: "G5", skill: "reading", part: "P1" }, true); };

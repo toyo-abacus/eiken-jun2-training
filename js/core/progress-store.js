@@ -49,6 +49,12 @@
       lastWrongAt: stat.lastWrongAt
     };
   }
+  function preferNewerStat(primary, secondary) {
+    var primaryTime = Date.parse(primary.lastAttemptAt || 0) || 0;
+    var secondaryTime = Date.parse(secondary.lastAttemptAt || 0) || 0;
+    if (secondaryTime > primaryTime || (secondaryTime === primaryTime && secondary.attempts > primary.attempts)) return secondary;
+    return primary;
+  }
   function normalizeIds(value) {
     if (!Array.isArray(value)) return [];
     var unique = {};
@@ -98,7 +104,14 @@
     data.questions = raw.questions || {};
     Object.keys(raw.questionStats || {}).forEach(function (id) { data.questionStats[id] = normalizeQuestionStat(raw.questionStats[id]); });
     Object.keys(data.questions).forEach(function (id) {
-      if (!data.questionStats[id]) data.questionStats[id] = normalizeQuestionStat(data.questions[id]);
+      var legacyStat = normalizeQuestionStat(data.questions[id]);
+      if (data.questionStats[id]) {
+        var selected = preferNewerStat(data.questionStats[id], legacyStat);
+        selected.gradeId = selected.gradeId || data.questionStats[id].gradeId;
+        selected.skill = selected.skill || data.questionStats[id].skill;
+        selected.part = selected.part || data.questionStats[id].part;
+        data.questionStats[id] = selected;
+      } else data.questionStats[id] = legacyStat;
       data.questions[id] = legacyQuestionValue(data.questionStats[id]);
     });
     data.sessions = trimSessions((raw.sessions || []).map(normalizeSession).filter(Boolean));

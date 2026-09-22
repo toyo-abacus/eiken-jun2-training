@@ -33,6 +33,7 @@
     return {
       request: request,
       getCurrent: current,
+      getQuestionIds: function () { return state.items.map(function (item) { return item.question.id; }); },
       getState: function () { return { index: state.index, total: state.items.length, score: state.score, complete: state.complete }; },
       answer: function (choiceId) {
         var item = current();

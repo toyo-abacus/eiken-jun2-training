@@ -387,7 +387,7 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 <button class="back" onclick="openSec('g5menu')">← 5級メニュー</button>
 <div class="card">
 <span class="badge">共通エンジン試験版</span>
-<p class="muted">開発確認用です。今回の回答は保存されません。</p>
+<p class="muted">開発確認用です。学習記録はこの端末に保存されます。</p>
 <h2 id="sharedLauncherTitle">練習内容を選ぶ</h2>
 <div id="sharedLauncherSkills" class="options"></div>
 <div id="sharedLauncherParts" class="options"></div>
@@ -401,16 +401,17 @@ hr{border:0;border-top:1px solid #e6e9ef;margin:18px 0}
 <button class="back" onclick="backToSharedPracticeLauncher()">← 練習内容を選ぶ</button>
 <div class="card">
 <span class="badge">共通エンジン試験版</span>
-<p class="muted">開発確認用です。今回の回答は保存されません。</p>
+<p class="muted">開発確認用です。学習記録はこの端末に保存されます。</p>
 <div class="meta"><span id="sharedPracticeCount"></span><span id="sharedPracticeScore"></span></div>
 <div class="progress"><div id="sharedPracticeBar" class="bar"></div></div>
 <h2 id="sharedPracticeTitle">共通エンジン試験版</h2>
 <div id="sharedPracticeQuestion" class="question"></div>
 <div id="sharedPracticeOptions" class="options"></div>
 <div id="sharedPracticeFeedback" class="ex"></div>
+<p id="sharedPracticeStorageWarning" class="muted"></p>
 <p id="sharedPracticeDebug" class="muted"></p>
 <button id="sharedPracticeNext" class="btn next" onclick="nextSharedPractice()">次へ</button>
-<div id="sharedPracticeResult" class="result"><hr><div id="sharedPracticeFinal" class="score"></div><p class="muted">この試験版は学習記録を保存しません。</p><button class="btn" onclick="backToSharedPracticeLauncher()">練習内容を選ぶ</button></div>
+<div id="sharedPracticeResult" class="result"><hr><div id="sharedPracticeFinal" class="score"></div><p class="muted">この試験版の学習記録はこの端末に保存されます。</p><button class="btn" onclick="backToSharedPracticeLauncher()">練習内容を選ぶ</button></div>
 </div>
 </section>
 
@@ -978,6 +979,7 @@ function nextReview(){
 }
 </script>
 <script src="js/core/data-loader.js"></script>
+<script src="js/core/progress-store.js"></script>
 <script src="js/core/practice-engine.js"></script>
 <script src="js/ui/practice-view.js"></script>
 <script src="js/g5-reading-p1.js"></script>
